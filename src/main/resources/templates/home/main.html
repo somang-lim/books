@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html layout:decorate="~{/layout/layout}">
+<html layout:decorate="~{/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
     <title>메인</title>
@@ -8,7 +8,7 @@
 <main layout:fragment="main">
     <section th:unless="${posts != null && posts.size > 0}"
              class="section section-post-list flex-grow flex items-center justify-center">
-        <div>
+        <div class="text-center">
             <div>글이 존재하지 않습니다.</div>
             <a href="/post/write" class="block text-link mt-2"><i class="fa-solid fa-pen"></i> 글 작성 하러가기</a>
         </div>
