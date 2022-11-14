@@ -48,4 +48,8 @@ public class MemberService {
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
 	}
+
+	public Member findByEmail(String email) {
+		return memberRepository.findByEmail(email).orElse(null);
+	}
 }

@@ -4,12 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.books.app.base.rq.Rq;
+import com.books.app.member.entity.Member;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
 
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/member")
 public class MemberController {
 	private final MemberService memberService;
+	private final Rq rq;
 
 	@PreAuthorize("isAnonymous()")
 	@GetMapping("/join")
@@ -51,6 +54,18 @@ public class MemberController {
 	@GetMapping("/findUsername")
 	public String showFindUsername() {
 		return "member/findUsername";
+	}
+
+	@PreAuthorize("isAnonymous()")
+	@PostMapping("/findUsername")
+	public String findUsername(String email, Model model) {
+		Member member = memberService.findByEmail(email);
+
+		if (member == null) {
+			return rq.historyBack("일치하는 회원이 존재하지 않습니다.");
+		}
+
+		return Rq.redirectWithMsg("/member/login?username=%s".formatted(member.getUsername()), "해당 이메일로 가입한 계정의 아이디는 '%s' 입니다.".formatted(member.getUsername()));
 	}
 
 }
