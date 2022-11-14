@@ -13,7 +13,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import com.books.app.base.dto.RsData;
 import com.books.app.member.entity.Member;
 import com.books.app.security.dto.MemberContext;
-import com.books.util.Ut.Ut;
+import com.books.util.Ut;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

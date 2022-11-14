@@ -1,7 +1,6 @@
-package com.books.util.Ut;
+package com.books.util;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class Ut {
@@ -18,7 +17,11 @@ public class Ut {
 				url += "?";
 			}
 
-			url += paramName + "=" + encode(paramValue);
+			if (!url.endsWith("?") && !url.endsWith("&")) {
+				url += "&";
+			}
+
+			url += paramName + "=" + paramValue;
 
 			return url;
 		}
@@ -47,7 +50,12 @@ public class Ut {
 		}
 
 		public static String encode(String str) {
-			return URLEncoder.encode(str, UTF_8);
+			try {
+				return URLEncoder.encode(str, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				return str;
+			}
 		}
+
 	}
 }

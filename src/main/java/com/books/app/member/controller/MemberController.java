@@ -1,5 +1,7 @@
 package com.books.app.member.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -31,5 +33,17 @@ public class MemberController {
 		memberService.join(joinForm);
 
 		return Rq.redirectWithMsg("/member/login", "회원가입이 완료되었습니다.");
+	}
+
+	@PreAuthorize("isAnonymous()")
+	@GetMapping("/login")
+	public String showLogin(HttpServletRequest request) {
+		String uri = request.getHeader("Referer");
+
+		if (uri != null && !uri.contains("/member/login")) {
+			request.getSession().setAttribute("prevPage", uri);
+		}
+
+		return "member/login";
 	}
 }

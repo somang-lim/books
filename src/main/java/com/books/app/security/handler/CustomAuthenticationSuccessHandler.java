@@ -18,7 +18,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import com.books.app.security.dto.MemberContext;
-import com.books.util.Ut.Ut;
+import com.books.util.Ut;
 
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
