@@ -1,0 +1,18 @@
+server:
+    port: 8080
+spring:
+    thymeleaf:
+        cache: false
+        prefix: file:src/main/resources/templates/
+    devtools:
+        livereload:
+            enabled: true
+        restart:
+            enabled: true
+    datasource:
+        url: jdbc:mariadb://127.0.0.1:3306/imbooks_dev?userUnicode=true&characterencoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+        username: imhope
+        password: 0987
+    jpa:
+        hibernate:
+            ddl-auto: create
