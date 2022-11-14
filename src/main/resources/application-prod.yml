@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:mariadb://${prodDbIp}:3306/imbooks_dev?userUnicode=true&characterencoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+        url: jdbc:mariadb://${prodDbIp}:3306/imbooks_prod?userUnicode=true&characterencoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
         username: ${prodDbId}
         password: ${prodDbPw}
     jpa:
