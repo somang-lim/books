@@ -46,6 +46,9 @@ public class Rq {
 	}
 
 	public boolean hasAuthority(String authorityName) {
+		if (memberContext == null)
+			return false;
+
 		return memberContext.hasAuthority(authorityName);
 	}
 

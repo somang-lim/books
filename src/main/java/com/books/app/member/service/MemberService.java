@@ -12,8 +12,10 @@ import com.books.app.member.form.JoinForm;
 import com.books.app.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
@@ -35,12 +37,15 @@ public class MemberService {
 			.nickname(joinForm.getNickname())
 			.build();
 
+
+		log.debug("member: " + member);
+
 		memberRepository.save(member);
 
 		return member;
 	}
 
-	private Optional<Member> findByUsername(String username) {
+	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
 	}
 }

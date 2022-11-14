@@ -29,7 +29,8 @@ public class SecurityConfig {
 					.loginPage("/member/login") // GET
 					.loginProcessingUrl("/member/login") // POST
 					.successHandler(authenticationSuccessHandler)
-					.failureHandler(authenticationFailureHandler))
+					.failureHandler(authenticationFailureHandler)
+			)
 			.logout(
 				logout -> logout
 					.logoutUrl("/member/logout")

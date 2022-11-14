@@ -18,6 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -29,6 +30,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class) // 해당 클래스에 Auditing 기능을 포함 (자동으로 값 입력)
 @ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
