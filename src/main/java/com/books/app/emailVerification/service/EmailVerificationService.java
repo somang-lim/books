@@ -46,4 +46,14 @@ public class EmailVerificationService {
 
 		return code;
 	}
+
+	public RsData verifyVerificationCode(Long memberId, String code) {
+		String foundCode = attrService.get("member__%d__extra__emailVerificationCode".formatted(memberId), "");
+
+		if (!foundCode.equals(code)) {
+			return RsData.of("F-1", "만료되었거나 유효하지 않은 코드입니다.");
+		}
+
+		return RsData.of("S-1", "인증된 코드입니다.");
+	}
 }

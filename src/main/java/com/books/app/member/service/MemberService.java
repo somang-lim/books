@@ -6,6 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.books.app.base.dto.RsData;
+import com.books.app.email.service.EmailService;
+import com.books.app.emailVerification.service.EmailVerificationService;
 import com.books.app.member.entity.Member;
 import com.books.app.member.exception.AlreadyJoinException;
 import com.books.app.member.form.JoinForm;
@@ -21,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final EmailVerificationService emailVerificationService;
+	private final EmailService emailService;
 
 	// 회원가입 로직
 	@Transactional
@@ -37,16 +42,28 @@ public class MemberService {
 			.nickname(joinForm.getNickname())
 			.build();
 
-
-		log.debug("member: " + member);
-
 		memberRepository.save(member);
+
+		emailVerificationService.send(member);
 
 		return member;
 	}
 
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
+	}
+
+	@Transactional
+	public RsData verifyEmail(Long id, String verificationCode) {
+		RsData verifyVerificationCodeRs = emailVerificationService.verifyVerificationCode(id, verificationCode);
+
+		if (!verifyVerificationCodeRs.isSuccess())
+			return verifyVerificationCodeRs;
+
+		Member member = memberRepository.findById(id).orElse(null);
+		member.setEmailVerified(true);
+
+		return RsData.of("S-1", "이메일인증이 완료되었습니다.");
 	}
 
 	public Member findByEmail(String email) {

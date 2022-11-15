@@ -24,12 +24,14 @@ public class MemberController {
 	private final MemberService memberService;
 	private final Rq rq;
 
+	// 회원가입 폼
 	@PreAuthorize("isAnonymous()")
 	@GetMapping("/join")
 	public String showJoin() {
 		return "member/join";
 	}
 
+	// 회원가입 로직
 	@PreAuthorize("isAnonymous()")
 	@PostMapping("/join")
 	public String join(@Validated JoinForm joinForm) {
@@ -38,6 +40,7 @@ public class MemberController {
 		return Rq.redirectWithMsg("/member/login", "회원가입이 완료되었습니다.");
 	}
 
+	// 로그인 폼
 	@PreAuthorize("isAnonymous()")
 	@GetMapping("/login")
 	public String showLogin(HttpServletRequest request) {
@@ -50,12 +53,14 @@ public class MemberController {
 		return "member/login";
 	}
 
+	// 아이디찾기 폼
 	@PreAuthorize("isAnonymous()")
 	@GetMapping("/findUsername")
 	public String showFindUsername() {
 		return "member/findUsername";
 	}
 
+	// 아이디찾기 로직
 	@PreAuthorize("isAnonymous()")
 	@PostMapping("/findUsername")
 	public String findUsername(String email, Model model) {

@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
 
 	private String email;
 
+	private boolean emailVerified;
+
 	private String nickname;
 
 	public String getName() {
@@ -63,5 +65,4 @@ public class Member extends BaseEntity {
 
 		return authorities;
 	}
-
 }
