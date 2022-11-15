@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.books.app.AppConfig;
 import com.books.app.base.dto.RsData;
 import com.books.app.email.service.EmailService;
 import com.books.app.emailVerification.service.EmailVerificationService;
@@ -53,6 +54,7 @@ public class MemberService {
 		return memberRepository.findByUsername(username);
 	}
 
+	// 회원가입 이메일 인증 발송
 	@Transactional
 	public RsData verifyEmail(Long id, String verificationCode) {
 		RsData verifyVerificationCodeRs = emailVerificationService.verifyVerificationCode(id, verificationCode);
@@ -63,7 +65,18 @@ public class MemberService {
 		Member member = memberRepository.findById(id).orElse(null);
 		member.setEmailVerified(true);
 
-		return RsData.of("S-1", "이메일인증이 완료되었습니다.");
+		return RsData.of("S-1", "이메일 인증이 완료되었습니다.");
+	}
+
+	// 회원가입 축하 이메일 발송
+	@Transactional
+	public RsData sendWelcome(Long id) {
+		Member member = memberRepository.findById(id).orElse(null);
+		String email = member.getEmail();
+		String subject = "[%s] %s님, 회원가입을 축하합니다.".formatted(AppConfig.getSiteName(), member.getName());
+		String body = "IMBOOKS에서 회원님의 많은 꿈을 이루시길 바라요 :)";
+
+		return emailService.sendEmail(email, subject, body);
 	}
 
 	public Member findByEmail(String email) {

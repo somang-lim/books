@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 public interface EmailSenderService {
 	void send(String to, String from, String subject, String body);
@@ -14,6 +15,7 @@ public interface EmailSenderService {
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 class GmailEmailSenderService implements EmailSenderService {
 	private final JavaMailSender mailSender;
 

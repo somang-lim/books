@@ -27,6 +27,8 @@ public class EmailVerificationController {
 
 		String successMsg = verifyEmailRsData.getMsg();
 
+		memberService.sendWelcome(memberId);
+
 		if (!rq.isLogin()) {
 			return Rq.redirectWithMsg("/member/login", successMsg);
 		}
