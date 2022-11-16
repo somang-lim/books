@@ -40,7 +40,6 @@ public class MemberService {
 			.username(joinForm.getUsername())
 			.password(passwordEncoder.encode(joinForm.getPassword()))
 			.email(joinForm.getEmail())
-			.nickname(joinForm.getNickname())
 			.build();
 
 		memberRepository.save(member);
@@ -50,11 +49,20 @@ public class MemberService {
 		return member;
 	}
 
+	// 테스트 데이터 강제 이메일 인증 처리 로직
+	@Transactional
+	public void forceEmailVerify(Member member) {
+		member.setEmailVerified(true);
+
+		memberRepository.save(member);
+	}
+
+
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
 	}
 
-	// 회원가입 이메일 인증 발송
+	// 회원가입 이메일 인증 로직
 	@Transactional
 	public RsData verifyEmail(Long id, String verificationCode) {
 		RsData verifyVerificationCodeRs = emailVerificationService.verifyVerificationCode(id, verificationCode);
@@ -68,7 +76,7 @@ public class MemberService {
 		return RsData.of("S-1", "이메일 인증이 완료되었습니다.");
 	}
 
-	// 회원가입 축하 이메일 발송
+	// 회원가입 축하 이메일 발송 로직
 	@Transactional
 	public RsData sendWelcome(Long id) {
 		Member member = memberRepository.findById(id).orElse(null);
