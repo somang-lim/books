@@ -108,4 +108,11 @@ public class MemberController {
 		return "member/profile";
 	}
 
+	// 비밀번호 변경 폼
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/modifyPassword")
+	public String showModifyPassword() {
+		return "member/modifyPassword";
+	}
+
 }
