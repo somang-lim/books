@@ -58,7 +58,6 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
-
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username);
 	}
@@ -68,8 +67,9 @@ public class MemberService {
 	public RsData verifyEmail(Long id, String verificationCode) {
 		RsData verifyVerificationCodeRs = emailVerificationService.verifyVerificationCode(id, verificationCode);
 
-		if (!verifyVerificationCodeRs.isSuccess())
+		if (!verifyVerificationCodeRs.isSuccess()) {
 			return verifyVerificationCodeRs;
+		}
 
 		Member member = memberRepository.findById(id).orElse(null);
 		member.setEmailVerified(true);
@@ -115,8 +115,23 @@ public class MemberService {
 		return RsData.of("S-1", "계정의 이메일주소로 임시 비밀번호가 발송되었습니다.");
 	}
 
+	// 임시 비밀번호 설정 로직
 	@Transactional
 	public void setTempPassword(Member member, String tempPassword) {
 		member.setPassword(passwordEncoder.encode(tempPassword));
+	}
+
+	// 비밀번호 변경 로직
+	@Transactional
+	public RsData modifyPassword(Member member, String password, String oldPassword) {
+		Member _member = memberRepository.findById(member.getId()).orElse(null);
+
+		if (!passwordEncoder.matches(oldPassword, _member.getPassword())) {
+			return RsData.failOf("기존 비밀번호가 일치하지 않습니다.");
+		}
+
+		_member.setPassword(passwordEncoder.encode(password));
+
+		return RsData.successOf("비밀번호가 변경되었습니다.");
 	}
 }

@@ -115,4 +115,18 @@ public class MemberController {
 		return "member/modifyPassword";
 	}
 
+	// 비밀번호 변경 로직
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/modifyPassword")
+	public String modifyPassword(String oldPassword, String password) {
+		Member member = rq.getMember();
+		RsData rsData = memberService.modifyPassword(member, password, oldPassword);
+
+		if (rsData.isFail()) {
+			return rq.historyBack(rsData.getMsg());
+		}
+
+		return Rq.redirectWithMsg("/", rsData);
+	}
+
 }
