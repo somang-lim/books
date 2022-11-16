@@ -129,4 +129,11 @@ public class MemberController {
 		return Rq.redirectWithMsg("/", rsData);
 	}
 
+	// 작가 활동 시작 폼
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/beAuthor")
+	public String showBeAuthor() {
+		return "member/beAuthor";
+	}
+
 }
