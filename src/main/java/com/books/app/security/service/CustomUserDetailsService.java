@@ -1,5 +1,7 @@
 package com.books.app.security.service;
 
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Member member = memberRepository.findByUsername(username).orElse(null);
+
+		if (!member.isEmailVerified()) {
+			throw new LockedException("이메일이 인증되지 않았습니다.");
+		}
 
 		return new MemberContext(member, member.genAuthorities());
 	}

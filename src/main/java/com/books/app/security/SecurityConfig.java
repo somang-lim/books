@@ -28,12 +28,13 @@ public class SecurityConfig {
 				formLogin -> formLogin
 					.loginPage("/member/login") // GET
 					.loginProcessingUrl("/member/login") // POST
-					.successHandler(authenticationSuccessHandler)
 					.failureHandler(authenticationFailureHandler)
+					.successHandler(authenticationSuccessHandler)
 			)
 			.logout(
 				logout -> logout
 					.logoutUrl("/member/logout")
+					.logoutSuccessUrl("/")
 			);
 
 		return http.build();
