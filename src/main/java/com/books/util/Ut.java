@@ -2,8 +2,16 @@ package com.books.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.UUID;
 
 public class Ut {
+	public static String getTempPassword(int length) {
+		UUID uuid = UUID.randomUUID();
+		String tempPassword = uuid.toString().substring(0, length);
+
+		return tempPassword;
+	}
+
 	public static class url {
 		public static boolean isUrl(String url) {
 			if (url == null)

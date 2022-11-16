@@ -14,6 +14,7 @@ import com.books.app.member.entity.Member;
 import com.books.app.member.exception.AlreadyJoinException;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.repository.MemberRepository;
+import com.books.util.Ut;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,5 +90,33 @@ public class MemberService {
 
 	public Member findByEmail(String email) {
 		return memberRepository.findByEmail(email).orElse(null);
+	}
+
+	public Member findByUsernameAndEmail(String username, String email) {
+		return memberRepository.findByUsernameAndEmail(username, email).orElse(null);
+	}
+
+	// 임시비밀번호 발송 로직
+	@Transactional
+	public RsData sendTempPasswordToEmail(Member member) {
+		String subject = "[%s] 임시 비밀번호 발송".formatted(AppConfig.getSiteName());
+		String tempPassword = Ut.getTempPassword(6);
+		String body = "<h2>임시 비밀번호: %s</h2>".formatted(tempPassword);
+		body += "<a href=\"%s/member/login\" target=\"_blank\">로그인 하러가기</a>".formatted(AppConfig.getSiteBaseUrl());
+
+		RsData sendResultData = emailService.sendEmail(member.getEmail(), subject, body);
+
+		if (sendResultData.isFail()) {
+			return sendResultData;
+		}
+
+		setTempPassword(member, tempPassword);
+
+		return RsData.of("S-1", "계정의 이메일주소로 임시 비밀번호가 발송되었습니다.");
+	}
+
+	@Transactional
+	public void setTempPassword(Member member, String tempPassword) {
+		member.setPassword(passwordEncoder.encode(tempPassword));
 	}
 }

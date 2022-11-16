@@ -1,7 +1,11 @@
 package com.books.app.emailSender.service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +27,15 @@ class GmailEmailSenderService implements EmailSenderService {
 	@Async
 	@Override
 	public void send(String to, String subject, String body) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		message.setText(body);
+		MimeMessage message = mailSender.createMimeMessage();
+		try {
+			MimeMessageHelper messageHelper = new MimeMessageHelper(message, false, "UTF-8");
+			messageHelper.setTo(to);
+			messageHelper.setSubject(subject);
+			messageHelper.setText(body, true);
+		} catch (MessagingException e) {
+			log.info("message send fail");
+		}
 
 		mailSender.send(message);
 	}
