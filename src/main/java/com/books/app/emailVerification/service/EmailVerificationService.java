@@ -22,7 +22,7 @@ public class EmailVerificationService {
 
 	public RsData<Long> send(Member member) {
 		String email = member.getEmail();
-		String subject = "[%s 이메일인증] 안녕하세요 %s님. 링크를 클릭하여 회원가입을 완료하세요.".formatted(AppConfig.getSiteName(), member.getName());
+		String subject = "[%s 이메일인증] 안녕하세요 %s님".formatted(AppConfig.getSiteName(), member.getName());
 		String url = genEmailVerificationUrl(member);
 
 		RsData<Long> sendEmailRs = emailService.sendEmail(email, subject, url);
@@ -37,7 +37,9 @@ public class EmailVerificationService {
 	public String genEmailVerificationUrl(Long memberId) {
 		String code = genEmailVerificationCode(memberId);
 
-		return AppConfig.getSiteBaseUrl() + "/emailVerification/verify?memberId=%d&code=%s".formatted(memberId, code);
+		String body = "<h2>아래 내용을 클릭하여 회원가입을 완료하세요.</h2>";
+		body += "<a href=\"%s/emailVerification/verify?memberId=%d&code=%s\" target=\"_blank\">이메일 인증하기</a>".formatted(AppConfig.getSiteBaseUrl(), memberId, code);
+		return body;
 	}
 
 	public String genEmailVerificationCode(Long memberId) {
