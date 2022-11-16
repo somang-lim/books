@@ -12,6 +12,7 @@ import com.books.app.member.service.MemberService;
 @Configuration
 @Profile({"dev", "test"})
 public class NotProdInitData {
+	// initData가 2번 이상 실행되지 않도록 설정
 	private boolean initDataDone = false;
 
 	@Bean

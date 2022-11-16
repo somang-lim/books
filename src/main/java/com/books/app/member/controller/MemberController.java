@@ -73,4 +73,11 @@ public class MemberController {
 		return Rq.redirectWithMsg("/member/login?username=%s".formatted(member.getUsername()), "해당 이메일로 가입한 계정의 아이디는 '%s' 입니다.".formatted(member.getUsername()));
 	}
 
+	// 비밀번호찾기 폼
+	@PreAuthorize("isAnonymous()")
+	@GetMapping("/findPassword")
+	public String showFindPassword() {
+		return "member/findPassword";
+	}
+
 }
