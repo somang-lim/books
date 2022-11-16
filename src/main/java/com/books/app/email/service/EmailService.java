@@ -43,12 +43,12 @@ public class EmailService {
 	// 메일 발송하는 부분만 분리
 	private RsData trySend(String email, String subject, String body) {
 		// 운영상태가 아니라면, 메일 발송된 것으로 처리
-		// if (AppConfig.isNotProd()) {
-		// 	return RsData.of("S-0", "메일이 발송되었습니다.");
-		// }
+		if (AppConfig.isNotProd() && !email.equals("limsomang628@naver.com")) {
+			return RsData.of("S-0", "메일이 발송되었습니다.");
+		}
 
 		try {
-			emailSenderService.send(email, "no-reply@no-reply.com", subject, body);
+			emailSenderService.send(email, subject, body);
 
 			return RsData.of("S-1", "메일이 발송되었습니다.");
 		} catch (MailException e) {
