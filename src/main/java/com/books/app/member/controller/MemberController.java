@@ -102,12 +102,12 @@ public class MemberController {
 		return Rq.redirectWithMsg("/member/login?username=%s".formatted(member.getUsername()), "해당 이메일로 '%s' 계정의 임시비밀번호를 발송했습니다.".formatted(member.getUsername()));
 	}
 
-	// 회원정보조회
+	// 회원정보 조회
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/profile")
 	public String profile() {
 		Member member = rq.getMember();
-		log.debug("member: " + member.genAuthorities());
+
 		return "member/profile";
 	}
 
