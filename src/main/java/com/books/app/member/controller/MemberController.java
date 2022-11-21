@@ -17,10 +17,12 @@ import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
+@Slf4j
 public class MemberController {
 	private final MemberService memberService;
 	private final Rq rq;
@@ -105,6 +107,8 @@ public class MemberController {
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/profile")
 	public String profile() {
+		Member member = rq.getMember();
+		log.debug("member: " + member.genAuthorities());
 		return "member/profile";
 	}
 
@@ -134,6 +138,21 @@ public class MemberController {
 	@GetMapping("/beAuthor")
 	public String showBeAuthor() {
 		return "member/beAuthor";
+	}
+
+	// 작가 활동 시작 로직
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/beAuthor")
+	public String beAuthor(String nickname) {
+		Member member = rq.getMember();
+
+		RsData rsData = memberService.beAuthor(member, nickname);
+
+		if (rsData.isFail()) {
+			return Rq.redirectWithMsg("/member/beAuthor", rsData);
+		}
+
+		return Rq.redirectWithMsg("/", rsData);
 	}
 
 }

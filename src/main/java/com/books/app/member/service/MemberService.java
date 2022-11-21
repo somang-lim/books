@@ -2,6 +2,10 @@ package com.books.app.member.service;
 
 import java.util.Optional;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,10 +14,12 @@ import com.books.app.AppConfig;
 import com.books.app.base.dto.RsData;
 import com.books.app.email.service.EmailService;
 import com.books.app.emailVerification.service.EmailVerificationService;
+import com.books.app.member.controller.MemberController;
 import com.books.app.member.entity.Member;
 import com.books.app.member.exception.AlreadyJoinException;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.repository.MemberRepository;
+import com.books.app.security.dto.MemberContext;
 import com.books.util.Ut;
 
 import lombok.RequiredArgsConstructor;
@@ -133,5 +139,39 @@ public class MemberService {
 		_member.setPassword(passwordEncoder.encode(password));
 
 		return RsData.successOf("비밀번호가 변경되었습니다.");
+	}
+
+	// 작가 등록 로직
+	@Transactional
+	public RsData beAuthor(Member member, String nickname) {
+		Optional<Member> _member = memberRepository.findByNickname(nickname);
+
+		if (_member.isPresent()) {
+			return RsData.of("F-1", "해당 필명은 이미 사용 중입니다.");
+		}
+
+		Member __member = memberRepository.findById(member.getId()).orElse(null);
+
+		__member.setNickname(nickname);
+		forceAuthentication(__member);
+
+		return RsData.of("S-1", "해당 필명으로 활동을 시작합니다.");
+	}
+
+	// 닉네임 변경으로 Authentication 변경 추가
+	private void forceAuthentication(Member member) {
+		MemberContext memberContext = new MemberContext(member, member.genAuthorities());
+
+		UsernamePasswordAuthenticationToken authentication =
+			UsernamePasswordAuthenticationToken.authenticated(
+				memberContext,
+				member.getPassword(),
+				memberContext.getAuthorities()
+			);
+
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		context.setAuthentication(authentication);
+
+		SecurityContextHolder.setContext(context);
 	}
 }
