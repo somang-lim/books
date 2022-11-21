@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -38,6 +39,9 @@ public class Member extends BaseEntity {
 
 	private String nickname;
 
+	@Convert(converter = AuthLevelConverter.class)
+	private AuthLevel authLevel;
+
 	public String getName() {
 		if (nickname != null) {
 			return nickname;
@@ -56,11 +60,18 @@ public class Member extends BaseEntity {
 
 	public List<GrantedAuthority> genAuthorities() {
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority("MEMBER"));
 
-		// 닉네임을 가지고 있다면 작가의 권한을 가진다.
+		// 모든 로그인한 회원에게는 USER 권한 부여
+		authorities.add(new SimpleGrantedAuthority(AuthLevel.USER.getValue())); // 일반 회원
+
+		// nickname 이 있으면 AUTHOR 권한 부여
 		if (StringUtils.hasText(nickname)) {
 			authorities.add(new SimpleGrantedAuthority("AUTHOR"));
+		}
+
+		// authLevel 이 7이면 ADMIN 권한 부여
+		if (this.authLevel == AuthLevel.ADMIN) {
+			authorities.add(new SimpleGrantedAuthority(AuthLevel.ADMIN.getValue())); // 관리자 회원
 		}
 
 		return authorities;

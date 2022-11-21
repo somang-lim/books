@@ -15,6 +15,7 @@ import com.books.app.base.dto.RsData;
 import com.books.app.email.service.EmailService;
 import com.books.app.emailVerification.service.EmailVerificationService;
 import com.books.app.member.controller.MemberController;
+import com.books.app.member.entity.AuthLevel;
 import com.books.app.member.entity.Member;
 import com.books.app.member.exception.AlreadyJoinException;
 import com.books.app.member.form.JoinForm;
@@ -42,11 +43,20 @@ public class MemberService {
 			throw new AlreadyJoinException();
 		}
 
+		AuthLevel authLevel = AuthLevel.USER; // default USER 회원
+
+		// username 이 admin 인 회원은 관리자 회원으로 설정
+		if (joinForm.getUsername().equals("admin")) {
+			authLevel = AuthLevel.ADMIN;
+		}
+
+		// 기본 권한 = 일반
 		Member member = Member
 			.builder()
 			.username(joinForm.getUsername())
 			.password(passwordEncoder.encode(joinForm.getPassword()))
 			.email(joinForm.getEmail())
+			.authLevel(authLevel)
 			.build();
 
 		memberRepository.save(member);
