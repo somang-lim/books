@@ -45,6 +45,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
     <!-- 토스트 UI 에디터 의존성 끝 -->
 
+    <!-- Tagify 의존성 추가 -->
+    <script src="https://unpkg.com/@yaireo/tagify"></script>
+
+    <!-- 폴리필 (구버젼 브라우저 지원) -->
+    <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+    <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+
     <!-- 공통 CSS -->
     <style>
         /* 지마켓 산스 불러오기 */
@@ -438,6 +445,11 @@
             ToastEditor__init();
         });
         // 토스트 에디터 끝
+
+        const hashTag = document.querySelector('input[name=postTagContents]');
+        let tagify = new Tagify(hashTag, {
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' ')
+        });
     </script>
 </th:block>
 </body>

@@ -41,6 +41,17 @@
                         return;
                     }
 
+                    const hashTag = form.postTagContents.value;
+
+                    let hashCount = hashTag.split("#").length;
+
+                    if (hashCount > 11) {
+                        warningModal("태그는 최대 10개까지 작성할 수 있습니다.");
+                        form.postTagContents.focus();
+
+                        return;
+                    }
+
                     const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
                     const markdown = editor.getMarkdown().trim();
                     const html = editor.getHTML().trim();
@@ -68,17 +79,14 @@
                     <label class="label">
                         <span class="label-text">제목</span>
                     </label>
-                    <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered"
-                           maxlength="50">
+                    <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered" maxlength="50">
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">태그</span>
                     </label>
-                    <input type="text" name="postTagContents" placeholder="#태그입력"
-                           class="input input-bordered"
-                           maxlength="50">
+                    <input type="text" name="postTagContents" placeholder="#태그입력" class="input input-bordered" maxlength="50">
                 </div>
 
                 <div class="form-control">
