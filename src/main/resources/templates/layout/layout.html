@@ -71,7 +71,7 @@
                 </span>
             </a>
 
-            <a href="/post/write" class="inline-flex">
+            <a href="/post/write" class="inline-flex" sec:authorize="isAuthenticated()">
                 <i class="fa-solid fa-pen"></i>
                 <span class="ml-[2px] hidden lg:block">
                     글 작성
