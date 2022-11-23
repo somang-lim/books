@@ -1,6 +1,10 @@
 package com.books.app.post.service;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -67,8 +71,8 @@ public class PostService {
 		return postTagService.getPostTags(post);
 	}
 
-	public Optional<Post> findById(Long id) {
-		return postRepository.findById(id);
+	public Optional<Post> findById(Long postId) {
+		return postRepository.findById(postId);
 	}
 
 	public boolean actorCanModify(Member actor, Post post) {
@@ -77,5 +81,38 @@ public class PostService {
 
 	public boolean actorCanRemove(Member actor, Post post) {
 		return actorCanModify(actor, post);
+	}
+
+	public List<Post> list(Long authorId) {
+		List<Post> posts = postRepository.findAllByAuthorIdOrderByIdDesc(authorId);
+
+		loadForPrintData(posts);
+
+		return posts;
+	}
+
+	public void loadForPrintData(List<Post> posts) {
+		long[] ids = posts
+			.stream()
+			.mapToLong(Post::getId)
+			.toArray();
+
+		List<PostTag> postTagsByPostIds = postTagService.getPostTagsByPostIdIn(ids);
+
+		Map<Long, List<PostTag>> postTagsByPostIdsMap = postTagsByPostIds
+														.stream()
+														.collect(groupingBy(
+															postTag -> postTag.getPost().getId(), toList()
+														));
+
+		posts
+			.stream()
+			.forEach(post -> {
+				List<PostTag> postTags = postTagsByPostIdsMap.get(post.getId());
+
+				if (postTags == null || postTags.size() == 0) return;
+
+				post.getExtra().put("postTags", postTags);
+			});
 	}
 }

@@ -82,4 +82,8 @@ public class PostTagService {
 	public List<PostTag> getPostTags(Post post) {
 		return postTagRepository.findAllByPostId(post.getId());
 	}
+
+	public List<PostTag> getPostTagsByPostIdIn(long[] ids) {
+		return postTagRepository.findAllByPostIdIn(ids);
+	}
 }

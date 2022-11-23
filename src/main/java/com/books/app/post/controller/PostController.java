@@ -1,5 +1,7 @@
 package com.books.app.post.controller;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,16 +44,25 @@ public class PostController {
 		return Rq.redirectWithMsg("/post/" + post.getId(), "%d번 글이 생성되었습니다.".formatted(post.getId()));
 	}
 
-	// 글 조회 폼
-	@PreAuthorize("isAuthenticated()")
+	// 글 조회 (상세 화면)
 	@GetMapping("/{id}")
 	public String detail(@PathVariable Long id, Model model) {
 		Post post = postService.detail(id);
-
-		Member actor = rq.getMember();
 
 		model.addAttribute("post", post);
 
 		return "post/detail";
 	}
+
+	// 글 리스트
+	@GetMapping("/list")
+	public String list(Model model) {
+		List<Post> posts = postService.list(rq.getId());
+
+		model.addAttribute("posts", posts);
+
+		return "post/list";
+	}
+
+
 }
