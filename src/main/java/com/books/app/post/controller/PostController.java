@@ -2,8 +2,10 @@ package com.books.app.post.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -38,5 +40,18 @@ public class PostController {
 		Post post = postService.write(author, postForm);
 
 		return Rq.redirectWithMsg("/post/" + post.getId(), "%d번 글이 생성되었습니다.".formatted(post.getId()));
+	}
+
+	// 글 조회 폼
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/{id}")
+	public String detail(@PathVariable Long id, Model model) {
+		Post post = postService.detail(id);
+
+		Member actor = rq.getMember();
+
+		model.addAttribute("post", post);
+
+		return "post/detail";
 	}
 }
