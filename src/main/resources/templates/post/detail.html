@@ -36,7 +36,7 @@
               </div>
             </div>
 
-            <div>
+            <div th:if="${post.createDate != post.updateDate}">
               <div class="badge badge-outline">
                 <i class="fa-solid fa-eraser"></i>
                 <span class="ml-1">수정</span>
