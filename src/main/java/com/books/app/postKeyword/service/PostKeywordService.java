@@ -1,5 +1,7 @@
 package com.books.app.postKeyword.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +17,16 @@ public class PostKeywordService {
 	private final PostKeywordRepository postKeywordRepository;
 
 	@Transactional
-	public PostKeyword save(String postKeywordContent) {
+	public PostKeyword save(String content) {
+		Optional<PostKeyword> optKeyword = postKeywordRepository.findByContent(content);
+
+		if (optKeyword.isPresent()) {
+			return optKeyword.get();
+		}
+
 		PostKeyword postKeyword = PostKeyword
 			.builder()
-			.content(postKeywordContent)
+			.content(content)
 			.build();
 
 		postKeywordRepository.save(postKeyword);
