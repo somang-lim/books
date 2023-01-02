@@ -18,10 +18,12 @@ import com.books.app.postTag.entity.PostTag;
 import com.books.app.postTag.service.PostTagService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 	private final PostRepository postRepository;
 	private final PostTagService postTagService;
@@ -91,6 +93,16 @@ public class PostService {
 		post.setContentHtml(postForm.getContentHtml());
 
 		applyPostTags(post, postForm.getPostTagContents());
+	}
+
+	// 글 삭제 로직
+	@Transactional
+	public void remove(Post post) {
+		if (post.getExtra().containsKey("hashTags")) {
+			postTagService.remove(post);
+		}
+
+		postRepository.delete(post);
 	}
 
 	// 글 리스트 (해시태그 포함)

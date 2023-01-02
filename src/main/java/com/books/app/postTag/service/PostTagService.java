@@ -86,4 +86,9 @@ public class PostTagService {
 	public List<PostTag> getPostTagsByPostIdIn(long[] ids) {
 		return postTagRepository.findAllByPostIdIn(ids);
 	}
+
+	// 글 삭제 시 사용하지 않는 태그 삭제
+	public void remove(Post post) {
+		postTagRepository.deleteById(post.getId());
+	}
 }

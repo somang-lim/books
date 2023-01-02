@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.books.app.base.exception.ActorCanNotModifyException;
+import com.books.app.base.exception.ActorCanNotRemoveException;
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
@@ -99,6 +100,23 @@ public class PostController {
 		postService.modify(post, postForm);
 
 		return Rq.redirectWithMsg("/post/" + post.getId(), "%d번 글이 수정되었습니다.".formatted(post.getId()));
+	}
+
+	// 글 삭제 로직
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
+	@PostMapping("/{id}/remove")
+	public String remove(@PathVariable long id) {
+		Post post = postService.detail(id);
+
+		Member actor = rq.getMember();
+
+		if (!postService.actorCanRemove(actor, post)) {
+			throw new ActorCanNotRemoveException();
+		}
+
+		postService.remove(post);
+
+		return Rq.redirectWithMsg("/post/list", "%d번 글이 삭제되었습니다.".formatted(post.getId()));
 	}
 
 }
