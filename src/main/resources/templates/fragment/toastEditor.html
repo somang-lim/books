@@ -448,7 +448,8 @@
 
         const hashTag = document.querySelector('input[name=postTagContents]');
         let tagify = new Tagify(hashTag, {
-            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' ')
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' '),
+            delimiters: ' ',
         });
     </script>
 </th:block>

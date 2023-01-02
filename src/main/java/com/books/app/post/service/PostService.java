@@ -115,4 +115,18 @@ public class PostService {
 				post.getExtra().put("postTags", postTags);
 			});
 	}
+
+	public Optional<Post> findForPrintById(long id) {
+		Optional<Post> opPost = findById(id);
+
+		if (opPost.isEmpty()) {
+			return opPost;
+		}
+
+		List<PostTag> postTags = getPostTags(opPost.get());
+
+		opPost.get().getExtra().put("postTags", postTags);
+
+		return opPost;
+	}
 }

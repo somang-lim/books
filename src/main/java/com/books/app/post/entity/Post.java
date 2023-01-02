@@ -20,11 +20,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Setter
 @Getter
 @SuperBuilder
+@Slf4j
 @ToString(callSuper = true)
 @NoArgsConstructor(access = PROTECTED)
 public class Post extends BaseEntity {
@@ -43,14 +45,43 @@ public class Post extends BaseEntity {
 		return contentHtml.replaceAll("toastui-editor-ww-code-block-highlighting", "");
 	}
 
-	public String getExtra_postTagLinks() {
+	public String getExtra_inputValue_hashTagContents() {
 		Map<String, Object> extra = getExtra();
+
+		log.debug("getExtra 확인 : " + extra.toString());
 
 		if (!extra.containsKey("postTags")) {
 			return "";
 		}
 
-		List<PostTag> postTags = (List<PostTag>)extra.get("postTags");
+		List<PostTag> postTags = (List<PostTag>) extra.get("postTags");
+
+		log.debug("postTags 확인 : " + postTags);
+		log.debug("postTags 개수 : " + postTags.size());
+
+		if (postTags.isEmpty()) {
+			return "";
+		}
+
+		log.debug("postTags 확인2 : " + postTags);
+
+		return postTags
+			.stream()
+			.map(postTag -> "#" + postTag.getPostKeyword().getContent())
+			.sorted()
+			.collect(Collectors.joining(" "));
+	}
+
+	public String getExtra_postTagLinks() {
+		Map<String, Object> extra = getExtra();
+
+		log.debug("getExtra 확인 : " + extra.toString());
+
+		if (!extra.containsKey("postTags")) {
+			return "";
+		}
+
+		List<PostTag> postTags = (List<PostTag>) extra.get("postTags");
 
 		if (postTags.isEmpty()) {
 			return "";

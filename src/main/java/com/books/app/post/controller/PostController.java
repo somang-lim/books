@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.books.app.base.exception.ActorCanNotModifyException;
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
@@ -25,6 +26,16 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 	private final PostService postService;
 	private final Rq rq;
+
+	// 글 리스트
+	@GetMapping("/list")
+	public String list(Model model) {
+		List<Post> posts = postService.list(rq.getId());
+
+		model.addAttribute("posts", posts);
+
+		return "post/list";
+	}
 
 	// 글 작성 폼
 	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
@@ -54,15 +65,20 @@ public class PostController {
 		return "post/detail";
 	}
 
-	// 글 리스트
-	@GetMapping("/list")
-	public String list(Model model) {
-		List<Post> posts = postService.list(rq.getId());
+	// 글 수정 폼
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
+	@GetMapping("/{id}/modify")
+	public String showModify(@PathVariable long id, Model model) {
+		Post post = postService.findForPrintById(id).get();
 
-		model.addAttribute("posts", posts);
+		Member actor = rq.getMember();
 
-		return "post/list";
+		if (!postService.actorCanModify(actor, post)) {
+			throw new ActorCanNotModifyException();
+		}
+
+		model.addAttribute("post", post);
+
+		return "post/modify";
 	}
-
-
 }
