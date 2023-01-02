@@ -2,6 +2,8 @@ package com.books.app.post.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,7 +71,7 @@ public class PostController {
 	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@GetMapping("/{id}/modify")
 	public String showModify(@PathVariable long id, Model model) {
-		Post post = postService.findForPrintById(id).get();
+		Post post = postService.detail(id);
 
 		Member actor = rq.getMember();
 
@@ -81,4 +83,22 @@ public class PostController {
 
 		return "post/modify";
 	}
+
+	// 글 수정 로직
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
+	@PostMapping("/{id}/modify")
+	public String modify(@Valid PostForm postForm, @PathVariable long id) {
+		Post post = postService.detail(id);
+
+		Member actor = rq.getMember();
+
+		if (!postService.actorCanModify(actor, post)) {
+			throw new ActorCanNotModifyException();
+		}
+
+		postService.modify(post, postForm);
+
+		return Rq.redirectWithMsg("/post/" + post.getId(), "%d번 글이 수정되었습니다.".formatted(post.getId()));
+	}
+
 }

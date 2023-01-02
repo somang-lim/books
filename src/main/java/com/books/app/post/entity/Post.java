@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Getter
 @SuperBuilder
-@Slf4j
 @ToString(callSuper = true)
 @NoArgsConstructor(access = PROTECTED)
 public class Post extends BaseEntity {
@@ -48,22 +47,15 @@ public class Post extends BaseEntity {
 	public String getExtra_inputValue_hashTagContents() {
 		Map<String, Object> extra = getExtra();
 
-		log.debug("getExtra 확인 : " + extra.toString());
-
 		if (!extra.containsKey("postTags")) {
 			return "";
 		}
 
 		List<PostTag> postTags = (List<PostTag>) extra.get("postTags");
 
-		log.debug("postTags 확인 : " + postTags);
-		log.debug("postTags 개수 : " + postTags.size());
-
 		if (postTags.isEmpty()) {
 			return "";
 		}
-
-		log.debug("postTags 확인2 : " + postTags);
 
 		return postTags
 			.stream()
@@ -74,8 +66,6 @@ public class Post extends BaseEntity {
 
 	public String getExtra_postTagLinks() {
 		Map<String, Object> extra = getExtra();
-
-		log.debug("getExtra 확인 : " + extra.toString());
 
 		if (!extra.containsKey("postTags")) {
 			return "";

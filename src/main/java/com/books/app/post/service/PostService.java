@@ -83,6 +83,17 @@ public class PostService {
 		return actorCanModify(actor, post);
 	}
 
+	// 글 수정 로직
+	@Transactional
+	public void modify(Post post, PostForm postForm) {
+		post.setSubject(postForm.getSubject());
+		post.setContent(postForm.getContent());
+		post.setContentHtml(postForm.getContentHtml());
+
+		applyPostTags(post, postForm.getPostTagContents());
+	}
+
+	// 글 리스트 (해시태그 포함)
 	public List<Post> list(Long authorId) {
 		List<Post> posts = postRepository.findAllByAuthorIdOrderByIdDesc(authorId);
 
@@ -114,19 +125,5 @@ public class PostService {
 
 				post.getExtra().put("postTags", postTags);
 			});
-	}
-
-	public Optional<Post> findForPrintById(long id) {
-		Optional<Post> opPost = findById(id);
-
-		if (opPost.isEmpty()) {
-			return opPost;
-		}
-
-		List<PostTag> postTags = getPostTags(opPost.get());
-
-		opPost.get().getExtra().put("postTags", postTags);
-
-		return opPost;
 	}
 }
