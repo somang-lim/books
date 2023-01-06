@@ -16,10 +16,12 @@ import com.books.app.postTag.entity.PostTag;
 import com.books.app.postTag.repository.PostTagRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class PostTagService {
 	private final PostTagRepository postTagRepository;
 	private final PostKeywordService postKeywordService;
@@ -88,7 +90,39 @@ public class PostTagService {
 	}
 
 	// 글 삭제 시 사용하지 않는 태그 삭제
+	@Transactional
 	public void remove(Post post) {
-		postTagRepository.deleteById(post.getId());
+		// 1. 삭제글의 해시태그를 가져오기
+		List<PostTag> oldPostTags = getPostTags(post);
+
+		// 2. 삭제글의 해시태그가 쓰인 곳이 있는지 확인하기
+		List<PostKeyword> postKeywords = new ArrayList<>();
+
+		for (PostTag postTag : oldPostTags) {
+			PostKeyword postKeyword = postKeywordService.getPostKeyword(postTag);
+
+			if (postKeyword == null) {
+				break;
+			}
+
+			List<PostTag> postTags = postTagRepository.findByPostKeywordId(postKeyword.getId());
+
+			if (postTags.size() == 1) {
+				postKeywords.add(postTag.getPostKeyword());
+			}
+		}
+
+		// 3. 사용하지 않는 해시태그가 있다면 키워드 먼저 삭제하기
+		if (postKeywords.size() > 0) {
+			removePostKeyword(postKeywords);
+		}
+
+		// 삭제글의 해시태그 삭제
+		postTagRepository.deleteByPostId(post.getId());
+	}
+
+	// 글 삭제 시 사용하지 않는 태그의 키워드도 사용하지 않을 경우 삭제
+	private void removePostKeyword(List<PostKeyword> postKeywords) {
+		postKeywordService.remove(postKeywords);
 	}
 }

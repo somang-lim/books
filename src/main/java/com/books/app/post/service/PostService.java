@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class PostService {
 	private final PostRepository postRepository;
 	private final PostTagService postTagService;
@@ -98,7 +97,7 @@ public class PostService {
 	// 글 삭제 로직
 	@Transactional
 	public void remove(Post post) {
-		if (post.getExtra().containsKey("hashTags")) {
+		if (post.getExtra().containsKey("postTags")) {
 			postTagService.remove(post);
 		}
 

@@ -37,5 +37,6 @@ public class PostTag extends BaseEntity {
 
 	@ManyToOne
 	@ToString.Exclude
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private PostKeyword postKeyword;
 }
