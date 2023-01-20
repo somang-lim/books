@@ -39,21 +39,47 @@ public class PostTagService {
 			.collect(Collectors.toList());
 
 		// 3. 삭제할 태그 찾기 (기존 태그 리스트에서 새로운 태그 리스트에 없는 것)
-		List<PostTag> needToDelete = new ArrayList<>();
+		List<PostTag> needToDeleteTags = new ArrayList<>();
 		for (PostTag oldPostTag : oldPostTags) {
-			// 기존에 등록된 태그가 새롭게 등록된 태그에 포함됐는지 여부 확인
+			// 3-1. 기존에 등록된 태그가 새롭게 등록된 태그에 포함됐는지 여부 확인
 			boolean contains = postKeywordContents.stream()
 				.anyMatch(s -> s.equals(oldPostTag.getPostKeyword().getContent()));
 
+			// 3-2. 없다면, 삭제할 태그 리스트에 추가하기
 			if (!contains) {
-				needToDelete.add(oldPostTag);
+				needToDeleteTags.add(oldPostTag);
 			}
 		}
 
-		// 4. 삭제할 태그 리스트에서 하나씩 삭제
-		needToDelete.forEach(postTag -> postTagRepository.delete(postTag));
+		// 4. 삭제할 키워드 찾기
+		List<PostKeyword> needToDeleteKeywords = new ArrayList<>();
+		for (PostTag postTag : needToDeleteTags) {
+			// 4-1. 글의 키워드 하나 가져오기
+			PostKeyword postKeyword = postKeywordService.getPostKeyword(postTag);
 
-		// 5. 새로운 태그 저장
+			// 4-2. 키워드가 없으면 멈추기
+			if (postKeyword == null) {
+				break;
+			}
+
+			// 4-3. 키워드가 몇 개 있는지 확인하기
+			List<PostTag> postTags = postTagRepository.findByPostKeywordId(postKeyword.getId());
+
+			// 4-4. 키워드가 1개만 있으면, 삭제할 키워드 리스트에 추가하기
+			if (postTags.size() == 1) {
+				needToDeleteKeywords.add(postTag.getPostKeyword());
+			}
+		}
+
+		// 5. 사용하지 않는 태그가 있다면 키워드 먼저 삭제하기
+		if (needToDeleteKeywords.size() > 0) {
+			deletePostKeyword(needToDeleteKeywords);
+		}
+
+		// 6. 삭제할 태그 리스트에서 하나씩 삭제
+		needToDeleteTags.forEach(postTag -> postTagRepository.delete(postTag));
+
+		// 7. 새로운 태그 저장
 		postKeywordContents.forEach(postKeywordContent -> {
 			savePostTag(post, postKeywordContent);
 		});
@@ -92,37 +118,41 @@ public class PostTagService {
 	// 글 삭제 시 사용하지 않는 태그 삭제
 	@Transactional
 	public void remove(Post post) {
-		// 1. 삭제글의 해시태그를 가져오기
+		// 1. 기존 태그 가져오기
 		List<PostTag> oldPostTags = getPostTags(post);
 
-		// 2. 삭제글의 해시태그가 쓰인 곳이 있는지 확인하기
-		List<PostKeyword> postKeywords = new ArrayList<>();
+		// 2. 글의 해시태그가 쓰인 곳이 있는지 확인하기
+		List<PostKeyword> needToDelete = new ArrayList<>();
 
 		for (PostTag postTag : oldPostTags) {
+			// 2-1. 글의 키워드 하나를 가져오기
 			PostKeyword postKeyword = postKeywordService.getPostKeyword(postTag);
 
+			// 2-2. 키워드가 없으면 멈추기
 			if (postKeyword == null) {
 				break;
 			}
 
+			// 2-3. 키워드가 몇 개 있는지 확인하기
 			List<PostTag> postTags = postTagRepository.findByPostKeywordId(postKeyword.getId());
 
+			// 2-4. 키워드가 1개만 있으면, 삭제할 키워드 리스트에 추가하기
 			if (postTags.size() == 1) {
-				postKeywords.add(postTag.getPostKeyword());
+				needToDelete.add(postTag.getPostKeyword());
 			}
 		}
 
-		// 3. 사용하지 않는 해시태그가 있다면 키워드 먼저 삭제하기
-		if (postKeywords.size() > 0) {
-			removePostKeyword(postKeywords);
+		// 3. 사용하지 않는 태그가 있다면 키워드 먼저 삭제하기
+		if (needToDelete.size() > 0) {
+			deletePostKeyword(needToDelete);
 		}
 
-		// 삭제글의 해시태그 삭제
+		// 글의 태그 삭제
 		postTagRepository.deleteByPostId(post.getId());
 	}
 
-	// 글 삭제 시 사용하지 않는 태그의 키워드도 사용하지 않을 경우 삭제
-	private void removePostKeyword(List<PostKeyword> postKeywords) {
+	// 사용하지 않는 태그의 키워드도 사용하지 않을 경우 삭제
+	private void deletePostKeyword(List<PostKeyword> postKeywords) {
 		postKeywordService.remove(postKeywords);
 	}
 }
