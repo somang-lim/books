@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-class AttrServiceTest {
+class AttrServiceTests {
 	@Autowired
 	private AttrService attrService;
 
