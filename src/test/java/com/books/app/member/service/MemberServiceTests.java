@@ -18,7 +18,7 @@ import com.books.app.member.form.JoinForm;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-class MemberServiceTest {
+class MemberServiceTests {
 
 	@Autowired
 	private MemberService memberService;

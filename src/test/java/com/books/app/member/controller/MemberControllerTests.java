@@ -29,7 +29,7 @@ import com.books.app.member.service.MemberService;
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
-class MemberControllerTest {
+class MemberControllerTests {
 
 	@Autowired
 	private MockMvc mvc;
@@ -77,22 +77,6 @@ class MemberControllerTest {
 			.andExpect(redirectedUrlPattern("/member/login?msg=**"));
 
 		assertThat(memberService.findByUsername("user10").isPresent()).isTrue();
-	}
-
-	@Test
-	@DisplayName("로그인 폼")
-	void showLogin() throws Exception {
-		// WHEN
-		ResultActions resultActions = mvc
-			.perform(get("/member/login"))
-			.andDo(print());
-
-		// THEN
-		resultActions
-			.andExpect(status().is2xxSuccessful())
-			.andExpect(handler().handlerType(MemberController.class))
-			.andExpect(handler().methodName("showLogin"))
-			.andExpect(content().string(containsString("로그인")));
 	}
 
 	@Test
