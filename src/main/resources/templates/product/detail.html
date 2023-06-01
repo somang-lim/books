@@ -38,7 +38,7 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div th:if="${product.createDate != product.updateDate}">
                             <div class="badge badge-outline">
                                 <i class="fa-solid fa-eraser"></i>
                                 <span class="ml-1">수정</span>
