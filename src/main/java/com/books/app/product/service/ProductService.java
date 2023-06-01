@@ -19,6 +19,7 @@ import com.books.app.postTag.entity.PostTag;
 import com.books.app.postTag.service.PostTagService;
 import com.books.app.product.entity.Product;
 import com.books.app.product.form.ProductForm;
+import com.books.app.product.form.ProductModifyForm;
 import com.books.app.product.repository.ProductRepository;
 import com.books.app.productTag.entity.ProductTag;
 import com.books.app.productTag.service.ProductTagService;
@@ -56,6 +57,14 @@ public class ProductService {
 
 	private void applyProductTags(Product product, String productTagContents) {
 		productTagService.applyProductTags(product, productTagContents);
+	}
+
+	@Transactional
+	public void modify(Product product, ProductModifyForm productForm) {
+		product.setSubject(productForm.getSubject());
+		product.setPrice(productForm.getPrice());
+
+		applyProductTags(product, productForm.getProductTagContents());
 	}
 
 	public Optional<Product> findById(Long id) {

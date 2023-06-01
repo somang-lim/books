@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.books.app.base.exception.ActorCanNotModifyException;
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
@@ -19,6 +20,7 @@ import com.books.app.postKeyword.entity.PostKeyword;
 import com.books.app.postKeyword.service.PostKeywordService;
 import com.books.app.product.entity.Product;
 import com.books.app.product.form.ProductForm;
+import com.books.app.product.form.ProductModifyForm;
 import com.books.app.product.service.ProductService;
 
 import lombok.RequiredArgsConstructor;
@@ -85,6 +87,21 @@ public class ProductController {
 		model.addAttribute("product", product);
 
 		return "product/modify";
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/{id}/modify")
+	public String modify(@Valid ProductModifyForm productForm, @PathVariable Long id) {
+		Product product = productService.findById(id).get();
+		Member actor = rq.getMember();
+
+		if (!productService.actorCanModify(actor, product)) {
+			throw new ActorCanNotModifyException();
+		}
+
+		productService.modify(product, productForm);
+
+		return Rq.redirectWithMsg("/product/" + product.getId(), "%d번 도서 상품이 수정되었습니다.".formatted(product.getId()));
 	}
 
 }
