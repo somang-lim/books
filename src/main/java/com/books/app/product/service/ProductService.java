@@ -1,6 +1,10 @@
 package com.books.app.product.service;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -85,6 +89,42 @@ public class ProductService {
 				.collect(Collectors.toList());
 	}
 
+	public List<Product> findAllForPrintByOrderByIdDesc(Member actor) {
+		List<Product> products = findAllByOrderByIdDesc();
+
+		loadForPrintData(products, actor);
+
+		return products;
+
+	}
+
+	public List<Product> findAllByOrderByIdDesc() {
+		return productRepository.findAllByOrderByIdDesc();
+	}
+
+	public void loadForPrintData(List<Product> products, Member actor) {
+		long[] ids = products
+				.stream()
+				.mapToLong(Product::getId)
+				.toArray();
+
+		List<ProductTag> productTagsByProductIds = productTagService.getProductTagsByProductIdIn(ids);
+
+		Map<Long, List<ProductTag>> productTagsByProductIdMap = productTagsByProductIds.stream()
+				.collect(groupingBy(
+					productTag -> productTag.getProduct().getId(), toList()
+				));
+
+		products.stream().forEach(product -> {
+			List<ProductTag> productTags = productTagsByProductIdMap.get(product.getId());
+
+			if (productTags == null || productTags.size() == 0) return;
+
+			product.getExtra().put("productTags", productTags);
+		});
+
+	}
+
 	public boolean actorCanModify(Member actor, Product product) {
 		if (actor == null) return false;
 
@@ -94,5 +134,4 @@ public class ProductService {
 	public boolean actorCanRemove(Member actor, Product product) {
 		return actorCanModify(actor, product);
 	}
-
 }

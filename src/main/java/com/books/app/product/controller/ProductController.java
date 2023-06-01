@@ -62,4 +62,13 @@ public class ProductController {
 		return "product/detail";
 	}
 
+	@GetMapping("/list")
+	public String list(Model model) {
+		List<Product> products = productService.findAllForPrintByOrderByIdDesc(rq.getMember());
+
+		model.addAttribute("products", products);
+
+		return "product/list";
+	}
+
 }
