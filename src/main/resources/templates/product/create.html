@@ -41,11 +41,22 @@
             return;
           }
 
-          form.postTagContents.value = form.postTagContents.value.trim();
+          form.productTagContents.value = form.productTagContents.value.trim();
 
-          if (form.postTagContents.value.length == 0) {
+          if (form.productTagContents.value.length == 0) {
             warningModal("태그를 입력해주세요.");
-            form.postTagContents.focus();
+            form.productTagContents.focus();
+
+            return;
+          }
+
+          const hashTag = form.productTagContents.value;
+
+          let hashCount = hashTag.split("#").length;
+
+          if (hashCount > 11) {
+            warningModal("태그는 최대 10개까지 작성할 수 있습니다.");
+            form.productTagContents.focus();
 
             return;
           }
@@ -57,8 +68,7 @@
       </script>
 
 
-      <form th:action method="POST" class="flex flex-col gap-3"
-            onsubmit="ProductCreate__submit(this); return false;">
+      <form th:action method="POST" class="flex flex-col gap-3" onsubmit="ProductCreate__submit(this); return false;">
 
         <div class="form-control">
           <label class="label">
@@ -76,25 +86,21 @@
           <label class="label">
             <span class="label-text">제목</span>
           </label>
-          <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered"
-                 maxlength="50">
+          <input autofocus type="text" name="subject" placeholder="제목" class="input input-bordered" maxlength="50">
         </div>
 
         <div class="form-control">
           <label class="label">
             <span class="label-text">가격</span>
           </label>
-          <input autofocus type="number" name="price" placeholder="가격" class="input input-bordered"
-                 maxlength="50">
+          <input autofocus type="number" name="price" placeholder="가격" class="input input-bordered" maxlength="50">
         </div>
 
         <div class="form-control">
           <label class="label">
             <span class="label-text">태그</span>
           </label>
-          <input type="text" name="productTagContents" placeholder="#태그1 #태그2 #태그3 ..."
-                 class="input input-bordered"
-                 maxlength="50">
+          <input type="text" name="productTagContents" placeholder="#태그입력" class="input input-bordered" maxlength="50">
         </div>
 
         <div class="grid grid-cols-2 mt-2 gap-2">
@@ -111,6 +117,8 @@
     </div>
 
   </section>
+
+  <th:block th:replace="fragment/tagify :: tagify"></th:block>
 
 </main>
 </body>
