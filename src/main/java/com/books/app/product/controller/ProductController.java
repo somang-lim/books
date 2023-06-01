@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.books.app.base.exception.ActorCanNotModifyException;
+import com.books.app.base.exception.ActorCanNotRemoveException;
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
@@ -34,7 +35,7 @@ public class ProductController {
 	private final PostKeywordService postKeywordService;
 	private final Rq rq;
 
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@GetMapping("/create")
 	public String showCreate(Model model) {
 		List<PostKeyword> postKeywords = postKeywordService.findByMemberId(rq.getId());
@@ -44,7 +45,7 @@ public class ProductController {
 		return "product/create";
 	}
 
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@PostMapping("/create")
 	public String create(@Valid ProductForm productForm) {
 		Member author = rq.getMember();
@@ -73,7 +74,7 @@ public class ProductController {
 		return "product/list";
 	}
 
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@GetMapping("/{id}/modify")
 	public String showModify(@PathVariable Long id, Model model) {
 		Product product = productService.findForPrintById(id).get();
@@ -89,7 +90,7 @@ public class ProductController {
 		return "product/modify";
 	}
 
-	@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@PostMapping("/{id}/modify")
 	public String modify(@Valid ProductModifyForm productForm, @PathVariable Long id) {
 		Product product = productService.findById(id).get();
