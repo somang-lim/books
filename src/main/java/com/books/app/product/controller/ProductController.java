@@ -23,6 +23,7 @@ import com.books.app.product.entity.Product;
 import com.books.app.product.form.ProductForm;
 import com.books.app.product.form.ProductModifyForm;
 import com.books.app.product.service.ProductService;
+import com.books.app.productTag.entity.ProductTag;
 
 import lombok.RequiredArgsConstructor;
 
@@ -118,6 +119,15 @@ public class ProductController {
 		productService.remove(product);
 
 		return Rq.redirectWithMsg("/product/list", "%d번 도서 상품이 삭제되었습니다.".formatted(product.getId()));
+	}
+
+	@GetMapping("/tag/{tagContent}")
+	public String tagList(@PathVariable String tagContent, Model model) {
+		List<ProductTag> productTags = productService.getProductTags(tagContent, rq.getMember());
+
+		model.addAttribute("productTags", productTags);
+
+		return "product/tagList";
 	}
 
 }

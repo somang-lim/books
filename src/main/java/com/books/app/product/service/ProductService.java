@@ -87,6 +87,23 @@ public class ProductService {
 		return productTagService.getProductTags(product);
 	}
 
+	public List<ProductTag> getProductTags(String productTagContent, Member actor) {
+		List<ProductTag> productTags = productTagService.getProductTags(productTagContent);
+
+		loadForPrintDataOnProductTagList(productTags, actor);
+
+		return productTags;
+	}
+
+	private void loadForPrintDataOnProductTagList(List<ProductTag> productTags, Member actor) {
+		List<Product> products = productTags
+				.stream()
+				.map(ProductTag::getProduct)
+				.collect(toList());
+
+		loadForPrintData(products, actor);
+	}
+
 	public List<Post> findPostsByProduct(Product product) {
 		Member author = product.getAuthor();
 		PostKeyword postKeyword = product.getPostKeyword();

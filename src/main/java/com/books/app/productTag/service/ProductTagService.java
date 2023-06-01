@@ -112,6 +112,10 @@ public class ProductTagService {
 		return productTagRepository.findAllByProductId(product.getId());
 	}
 
+	public List<ProductTag> getProductTags(String productKeywordContent) {
+		return productTagRepository.findAllByProductKeyword_contentOrderByProduct_idDesc(productKeywordContent);
+	}
+
 	public List<ProductTag> getProductTagsByProductIdIn(long[] ids) {
 		return productTagRepository.findAllByProductIdIn(ids);
 	}
