@@ -40,4 +40,13 @@ public class ProductController {
 		return "product/create";
 	}
 
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/create")
+	public String create(@Valid ProductForm productForm) {
+		Member author = rq.getMember();
+		Product product = productService.create(author, productForm);
+
+		return "redirect:/product/" + product.getId();
+	}
+
 }
