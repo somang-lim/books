@@ -15,4 +15,6 @@ public interface ProductTagRepository extends JpaRepository<ProductTag, Long> {
 	Optional<ProductTag> findByProductIdAndProductKeywordId(Long productId, Long productKeywordId);
 
 	List<ProductTag> findAllByProductIdIn(long[] ids);
+
+	void deleteByProductId(Long productId);
 }

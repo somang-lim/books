@@ -115,4 +115,40 @@ public class ProductTagService {
 	public List<ProductTag> getProductTagsByProductIdIn(long[] ids) {
 		return productTagRepository.findAllByProductIdIn(ids);
 	}
+
+	// 글 삭제 시 사용하지 않는 태그 삭제
+	@Transactional
+	public void remove(Product product) {
+		// 1. 기존 태그 가져오기
+		List<ProductTag> oldProductTags = getProductTags(product);
+
+		// 2. 글의 해시태그가 쓰인 곳이 있는지 확인하기
+		List<ProductKeyword> needToDelete = new ArrayList<>();
+
+		for (ProductTag productTag : oldProductTags) {
+			// 2-1. 글의 키워드 하나를 가져오기
+			ProductKeyword productKeyword = productKeywordService.getProductKeyword(productTag);
+
+			// 2-2. 키워드가 없으면 멈추기
+			if (productKeyword == null) {
+				break;
+			}
+
+			// 2-3. 키워드가 몇 개 있는지 확인하기
+			List<ProductTag> productTags = productTagRepository.findByProductKeywordId(productKeyword.getId());
+
+			// 2-4. 키워드가 1개만 있으면, 삭제할 키워드 리스트에 추가하기
+			if (productTags.size() == 1) {
+				needToDelete.add(productTag.getProductKeyword());
+			}
+		}
+
+		// 3. 사용하지 않는 태그가 있다면 키워드 먼저 삭제하기
+		if (needToDelete.size() > 0) {
+			deleteProductKeyword(needToDelete);
+		}
+
+		 // 글의 태그 삭제하기
+		productTagRepository.deleteByProductId(product.getId());
+	}
 }

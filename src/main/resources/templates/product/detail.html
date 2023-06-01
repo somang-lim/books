@@ -60,7 +60,7 @@
                     </a>
 
                     <a th:if="${@productService.actorCanRemove(@rq.member, product)}" href="javascript:;"
-                       onclick="if (ㅊonfirm('정말로 삭제하시겠습니까?')) $(this).next().submit();"
+                       onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();"
                        class="btn btn-secondary btn-sm btn-outline">
                         <i class="fa-solid fa-trash"></i>
                         <span class="ml-1">삭제</span>

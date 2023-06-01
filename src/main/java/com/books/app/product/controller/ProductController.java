@@ -104,4 +104,19 @@ public class ProductController {
 		return Rq.redirectWithMsg("/product/" + product.getId(), "%d번 도서 상품이 수정되었습니다.".formatted(product.getId()));
 	}
 
+	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
+	@PostMapping("/{id}/remove")
+	public String remove(@PathVariable Long id) {
+		Product product = productService.detail(id);
+		Member actor = rq.getMember();
+
+		if (!productService.actorCanRemove(actor, product)) {
+			throw new ActorCanNotRemoveException();
+		}
+
+		productService.remove(product);
+
+		return Rq.redirectWithMsg("/product/list", "%d번 도서 상품이 삭제되었습니다.".formatted(product.getId()));
+	}
+
 }

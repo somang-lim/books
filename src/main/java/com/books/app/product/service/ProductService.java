@@ -143,4 +143,29 @@ public class ProductService {
 	public boolean actorCanRemove(Member actor, Product product) {
 		return actorCanModify(actor, product);
 	}
+
+	@Transactional
+	public void remove(Product product) {
+		if (product.getExtra().containsKey("productTags")) {
+			productTagService.remove(product);
+		}
+
+		productRepository.delete(product);
+	}
+
+	public Product detail(Long id) {
+		Optional<Product> opProduct = findById(id);
+
+		if (opProduct.isEmpty()) {
+			return opProduct.get();
+		}
+
+		Product product = opProduct.get();
+
+		List<ProductTag> productTags = getProductTags(product);
+
+		product.getExtra().put("productTags", productTags);
+
+		return product;
+	}
 }
