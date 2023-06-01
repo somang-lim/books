@@ -71,4 +71,20 @@ public class ProductController {
 		return "product/list";
 	}
 
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/{id}/modify")
+	public String showModify(@PathVariable Long id, Model model) {
+		Product product = productService.findForPrintById(id).get();
+
+		Member actor = rq.getMember();
+
+		if (!productService.actorCanModify(actor, product)) {
+			throw new ActorCanNotModifyException();
+		}
+
+		model.addAttribute("product", product);
+
+		return "product/modify";
+	}
+
 }

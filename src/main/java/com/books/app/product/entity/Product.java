@@ -71,4 +71,24 @@ public class Product extends BaseEntity {
 				.collect(Collectors.joining(" "));
 	}
 
+	public String getExtra_inputValue_hashTagContents() {
+		Map<String, Object> extra = getExtra();
+
+		if (!extra.containsKey("productTags")) {
+			return "";
+		}
+
+		List<ProductTag> productTags = (List<ProductTag>) extra.get("productTags");
+
+		if (productTags.isEmpty()) {
+			return "";
+		}
+
+		return productTags
+				.stream()
+				.map(productTag -> "#" + productTag.getProductKeyword().getContent())
+				.sorted()
+				.collect(Collectors.joining(" "));
+	}
+
 }
