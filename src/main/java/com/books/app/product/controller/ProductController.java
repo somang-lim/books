@@ -8,11 +8,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
+import com.books.app.post.entity.Post;
 import com.books.app.postKeyword.entity.PostKeyword;
 import com.books.app.postKeyword.service.PostKeywordService;
 import com.books.app.product.entity.Product;
@@ -47,6 +49,17 @@ public class ProductController {
 		Product product = productService.create(author, productForm);
 
 		return "redirect:/product/" + product.getId();
+	}
+
+	@GetMapping("/{id}")
+	public String detail(@PathVariable Long id, Model model) {
+		Product product = productService.findForPrintById(id).get();
+		List<Post> posts = productService.findPostsByProduct(product);
+
+		model.addAttribute("product", product);
+		model.addAttribute("posts", posts);
+
+		return "product/detail";
 	}
 
 }
