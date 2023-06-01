@@ -10,6 +10,8 @@ import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
 import com.books.app.post.form.PostForm;
 import com.books.app.post.service.PostService;
+import com.books.app.product.form.ProductForm;
+import com.books.app.product.service.ProductService;
 
 @Configuration
 @Profile({"dev", "test"})
@@ -20,7 +22,8 @@ public class NotProdInitData {
 	@Bean
 	CommandLineRunner initData(
 		MemberService memberService,
-		PostService postService
+		PostService postService,
+		ProductService productService
 	) {
 		return args -> {
 			if (initDataDone) {
@@ -33,6 +36,7 @@ public class NotProdInitData {
 			Member member1 = memberService.join(joinForm);
 			memberService.forceEmailVerify(member1);
 			memberService.beAuthor(member1, "망소");
+
 			joinForm = new JoinForm("user2", "1234", "user2@test.com");
 			Member member2 = memberService.join(joinForm);
 			memberService.forceEmailVerify(member2);
@@ -56,6 +60,12 @@ public class NotProdInitData {
 							""".stripIndent(),
 			 "#IT #프론트엔드 #리액트");
 			postService.write(member1, postForm2);
+
+			ProductForm productForm1 = new ProductForm("IT모음", 9000, 1L, "#IT #Java #JavaScript #소망");
+			productService.create(member1, productForm1);
+
+			ProductForm productForm2 = new ProductForm("카프카 책", 7000, 3L, "#카프카 #소망");
+			productService.create(member1, productForm2);
 		};
 	}
 }
