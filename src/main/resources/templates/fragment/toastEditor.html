@@ -446,8 +446,14 @@
         });
         // 토스트 에디터 끝
 
-        const hashTag = document.querySelector('input[name=postTagContents]');
-        let tagify = new Tagify(hashTag, {
+        const postHashTag = document.querySelector('input[name=postTagContents]');
+        let postTagify = new Tagify(postHashTag, {
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' '),
+            delimiters: ' ',
+        });
+
+        const productHashTag = document.querySelector('input[name=productTagContents]');
+        let productTagify = new Tagify(productHashTag, {
             originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' '),
             delimiters: ' ',
         });

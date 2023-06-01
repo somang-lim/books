@@ -46,9 +46,18 @@ public class PostKeywordService {
 		return null;
 	}
 
+	@Transactional
 	public void remove(List<PostKeyword> postKeywords) {
 		for (PostKeyword postKeyword : postKeywords) {
 			postKeywordRepository.delete(postKeyword);
 		}
+	}
+
+	public Optional<PostKeyword> findById(Long postKeywordId) {
+		return postKeywordRepository.findById(postKeywordId);
+	}
+
+	public List<PostKeyword> findByMemberId(Long authorId) {
+		return postKeywordRepository.getQslAllByAuthorId(authorId);
 	}
 }

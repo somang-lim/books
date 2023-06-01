@@ -21,4 +21,6 @@ public interface PostTagRepository extends JpaRepository<PostTag, Long> {
 	List<PostTag> findByPostKeywordId(Long postKeywordId);
 
 	void deleteByPostId(Long id);
+
+	List<PostTag> findAllByMemberIdAndPostKeywordIdOrderByPost_idDesc(Long authorId, Long postKeywordId);
 }

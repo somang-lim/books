@@ -1,4 +1,4 @@
-package com.books.app.postKeyword.entity;
+package com.books.app.productKeyword.entity;
 
 import javax.persistence.Entity;
 
@@ -18,14 +18,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class PostKeyword extends BaseEntity {
+public class ProductKeyword extends BaseEntity {
+
 	private String content;
 
 	public Object getListUrl() {
-		return "/post/tag" + content;
+		return "/product/tag/" + content;
 	}
 
-	public long getExtra_postTagsCount() {
-		return (long) getExtra().get("postTagsCount");
-	}
 }

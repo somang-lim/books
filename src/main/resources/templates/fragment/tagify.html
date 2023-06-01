@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/html">
+
+<body>
+<th:block th:fragment="tagify">
+    <!-- Tagify 의존성 추가 -->
+    <script src="https://unpkg.com/@yaireo/tagify"></script>
+
+    <!-- 폴리필 (구버젼 브라우저 지원) -->
+    <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+    <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+
+
+    <script>
+        const hashTag = document.querySelector('input[name=productTagContents]');
+        let tagify = new Tagify(hashTag, {
+            originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(' '),
+            delimiters: ' ',
+        });
+    </script>
+</th:block>
+</body>
+
+</html>

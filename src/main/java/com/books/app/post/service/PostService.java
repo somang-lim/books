@@ -137,4 +137,12 @@ public class PostService {
 				post.getExtra().put("postTags", postTags);
 			});
 	}
+
+	public boolean actorCanSee(Member actor, Post post) {
+		if (actor == null) return false;
+		if (post == null) return false;
+
+		return post.getAuthor().getId().equals(actor.getId());
+	}
+
 }

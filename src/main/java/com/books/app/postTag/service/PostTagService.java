@@ -111,6 +111,10 @@ public class PostTagService {
 		return postTagRepository.findAllByPostId(post.getId());
 	}
 
+	public List<PostTag> getPostTags(Long authorId, Long postKeywordId) {
+		return postTagRepository.findAllByMemberIdAndPostKeywordIdOrderByPost_idDesc(authorId, postKeywordId);
+	}
+
 	public List<PostTag> getPostTagsByPostIdIn(long[] ids) {
 		return postTagRepository.findAllByPostIdIn(ids);
 	}
