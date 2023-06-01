@@ -24,4 +24,8 @@ public class PostKeyword extends BaseEntity {
 	public Object getListUrl() {
 		return "/post/tag" + content;
 	}
+
+	public long getExtra_postTagsCount() {
+		return (long) getExtra().get("postTagsCount");
+	}
 }

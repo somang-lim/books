@@ -51,4 +51,8 @@ public class PostKeywordService {
 			postKeywordRepository.delete(postKeyword);
 		}
 	}
+
+	public List<PostKeyword> findByMemberId(Long authorId) {
+		return postKeywordRepository.getQslAllByAuthorId(authorId);
+	}
 }

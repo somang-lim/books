@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Ut {
 	public static String getTempPassword(int length) {
 		UUID uuid = UUID.randomUUID();
@@ -64,6 +67,9 @@ public class Ut {
 				return str;
 			}
 		}
+	}
 
+	public String nf(long number) {
+		return String.format("%d", (int) number);
 	}
 }
