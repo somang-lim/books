@@ -39,4 +39,7 @@ public class CartService {
 		return cartItem;
 	}
 
+	public List<CartItem> getItemsByBuyer(Member buyer) {
+		return cartItemRepository.findAllByBuyerId(buyer.getId());
+	}
 }

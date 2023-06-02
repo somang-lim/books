@@ -39,21 +39,21 @@
         </a>
 
         <div class="flex gap-4">
-            <a href="/member/login" class="inline-flex" sec:authorize="isAnonymous()">
+            <a href="/member/login" class="inline-flex" th:if="${@rq.logout}">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 <span class="ml-[2px] hidden lg:block">
                     로그인
                 </span>
             </a>
 
-            <a href="/member/join" class="inline-flex" sec:authorize="isAnonymous()">
+            <a href="/member/join" class="inline-flex" th:if="${@rq.logout}">
                 <i class="fa-solid fa-user-plus"></i>
                 <span class="ml-[2px] hidden lg:block">
                     회원가입
                 </span>
             </a>
 
-            <a href="javascript: document.logoutForm.submit();" class="inline-flex" sec:authorize="isAuthenticated()">
+            <a href="javascript: document.logoutForm.submit();" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 <span class="ml-[2px] hidden lg:block">
                     로그아웃
@@ -61,7 +61,7 @@
             </a>
             <form name="logoutForm" method="POST" th:action="@{/member/logout}" hidden></form>
 
-            <a href="/member/profile" class="inline-flex" sec:authorize="isAuthenticated()">
+            <a href="/member/profile" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-user"></i>
                 <span class="ml-[2px]">
                    <svg width="20" height="20" th:data-jdenticon-value="${@rq.member.jdenticon}"></svg>
@@ -71,7 +71,14 @@
                 </span>
             </a>
 
-            <a href="/post/write" class="inline-flex" sec:authorize="isAuthenticated()">
+            <a href="/cart" class="inline-flex" th:if="${@rq.login}">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="ml-[2px] hidden lg:block">
+                    장바구니
+                </span>
+            </a>
+
+            <a href="/post/write" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-pen"></i>
                 <span class="ml-[2px] hidden lg:block">
                     글 작성
@@ -85,7 +92,7 @@
                 </span>
             </a>
 
-            <a href="/product/create" class="inline-flex" sec:authorize="isAuthenticated()">
+            <a href="/product/create" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-book-medical"></i>
                 <span class="ml-[2px] hidden lg:block">
                     도서 등록
