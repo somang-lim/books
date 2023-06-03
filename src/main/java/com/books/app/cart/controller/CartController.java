@@ -1,5 +1,6 @@
 package com.books.app.cart.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import com.books.app.cart.service.CartService;
 import com.books.app.member.entity.Member;
 import com.books.app.product.entity.Product;
 import com.books.app.security.dto.MemberContext;
+import com.books.util.Ut;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,6 +57,26 @@ public class CartController {
 		cartService.removeItem(rq.getMember(), new Product(productId));
 
 		return rq.redirectToBackWithMsg("장바구니에서 삭제되었습니다.");
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/remove")
+	public String removeItems(String ids) {
+		Member buyer = rq.getMember();
+
+		String[] idsArr = ids.split(",");
+
+		Arrays.stream(idsArr)
+			.mapToLong(Long::parseLong)
+			.forEach(id -> {
+				CartItem cartItem = cartService.findItemById(id).orElse(null);
+
+				if (cartService.actorCanDelete(buyer, cartItem)) {
+					cartService.removeItem(cartItem);
+				}
+			});
+
+		return "redirect:/cart/?msg=" + Ut.url.encode("%d건의 품목이 삭제되었습니다.".formatted(idsArr.length));
 	}
 
 

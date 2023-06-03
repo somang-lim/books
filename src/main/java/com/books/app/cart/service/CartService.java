@@ -1,6 +1,7 @@
 package com.books.app.cart.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,4 +55,18 @@ public class CartService {
 
 		return false;
 	}
+
+	@Transactional
+	public void removeItem(CartItem cartItem) {
+		cartItemRepository.delete(cartItem);
+	}
+
+	public Optional<CartItem> findItemById(Long id) {
+		return cartItemRepository.findById(id);
+	}
+
+	public boolean actorCanDelete(Member buyer, CartItem cartItem) {
+		return buyer.getId().equals(cartItem.getBuyer().getId());
+	}
+
 }
