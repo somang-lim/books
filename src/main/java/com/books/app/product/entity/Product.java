@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import com.books.app.base.entity.BaseEntity;
+import com.books.app.cart.entity.CartItem;
 import com.books.app.member.entity.Member;
 import com.books.app.postKeyword.entity.PostKeyword;
 import com.books.app.productTag.entity.ProductTag;
@@ -38,6 +39,11 @@ public class Product extends BaseEntity {
 	private String subject;
 
 	private int price;
+
+
+	public Product(Long id) {
+		super(id);
+	}
 
 	public String getJdenticon() {
 		return "product__" + getId();
@@ -89,6 +95,20 @@ public class Product extends BaseEntity {
 				.map(productTag -> "#" + productTag.getProductKeyword().getContent())
 				.sorted()
 				.collect(Collectors.joining(" "));
+	}
+
+	public CartItem getExtra_actor_cartItem() {
+		Map<String, Object> extra = getExtra();
+
+		if (!extra.containsKey("actor_cartItem")) {
+			return null;
+		}
+
+		return (CartItem) extra.get("actor_cartItem");
+	}
+
+	public boolean getExtra_actor_hasInCart() {
+		return getExtra_actor_cartItem() != null;
 	}
 
 }

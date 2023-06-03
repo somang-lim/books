@@ -2,8 +2,9 @@
 <html xmlns:th="http://www.w3.org/1999/html">
 
 <body>
-<th:block th:fragment="productListItem">
-    <div class="card bg-base-100 shadow-xl">
+<th:block th:fragment="cartItem">
+
+    <div class="card bg-base-100 shadow-xl pt-8">
         <a th:href="@{|/product/${product.id}|}" class="block">
             <figure>
                 <svg width="200" height="200" th:data-jdenticon-value="${product.jdenticon}"></svg>
@@ -16,12 +17,13 @@
                     <span th:text="${product.subject}"></span>
                 </a>
                 <div class="flex">
-                    <svg width="20" height="20" th:data-jdenticon-value="${product.author.jdenticon}"></svg>
+                    <svg width="20" height="20"
+                         th:data-jdenticon-value="${product.author.jdenticon}"></svg>
                     <div th:text="${product.author.name}"></div>
                 </div>
             </h2>
             <div th:text="|￦ ${@ut.nf(product.price)}|"></div>
-            <div th:utext="${product.extra_productTagLinks}"></div>
+
             <div class="flex justify-end">
                 <div class="badge badge-outline">
                     <i class="fa-solid fa-pen"></i>
@@ -29,22 +31,15 @@
                           th:text="${#temporals.format(product.createDate, 'yy-MM-dd')}"></span>
                 </div>
             </div>
-            <div th:if="${product.createDate != product.updateDate}" class="flex justify-end">
-                <div class="badge">
-                    <i class="fa-solid fa-eraser"></i>
-                    <span class="ml-2"
-                          th:text="${#temporals.format(product.updateDate, 'yy-MM-dd')}"></span>
-                </div>
-            </div>
-            <div class="card-actions justify-end">
-                <a href="javascript:;" onclick="$(this).next().submit();" class="btn btn-sm"
-                   th:classappend="| ${product.extra_actor_hasInCart ? 'btn-disabled' : ''}
-                                   ${product.author.id == @rq.member.id ? 'btn-disabled' : ''} |">
-                    <i class="fa-solid fa-cart-plus"></i>
-                    <span class="ml-2">장바구니</span>
+
+            <div class="card-actions justify-end mt-2">
+                <a class="btn btn-warning btn-sm" href="javascript:;"
+                   onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">
+                    <i class="fa-solid fa-trash"></i>
+                    <span class="ml-2">삭제</span>
                 </a>
 
-                <form th:action="@{|/cart/addItem/${product.id}|}" method="POST"></form>
+                <form th:action="@{|/cart/remove/${product.id}|}" method="POST" hidden></form>
 
                 <a th:href="@{|/product/${product.id}|}" class="btn btn-sm">
                     <i class="fa-solid fa-eye"></i>
@@ -53,7 +48,7 @@
             </div>
         </div>
     </div>
+
 </th:block>
 </body>
-
 </html>

@@ -56,8 +56,8 @@ public class ProductController {
 	}
 
 	@GetMapping("/{id}")
-	public String detail(@PathVariable Long id, Model model) {
-		Product product = productService.findForPrintById(id).get();
+	public String showDetail(@PathVariable Long id, Model model) {
+		Product product = productService.findForPrintById(id, rq.getMember()).get();
 		List<Post> posts = productService.findPostsByProduct(product);
 
 		model.addAttribute("product", product);
@@ -67,7 +67,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/list")
-	public String list(Model model) {
+	public String showList(Model model) {
 		List<Product> products = productService.findAllForPrintByOrderByIdDesc(rq.getMember());
 
 		model.addAttribute("products", products);
@@ -78,7 +78,7 @@ public class ProductController {
 	@PreAuthorize("isAuthenticated() and hasAuthority('AUTHOR')")
 	@GetMapping("/{id}/modify")
 	public String showModify(@PathVariable Long id, Model model) {
-		Product product = productService.findForPrintById(id).get();
+		Product product = productService.findForPrintById(id, rq.getMember()).get();
 
 		Member actor = rq.getMember();
 
