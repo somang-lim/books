@@ -49,5 +49,13 @@ public class CartController {
 		return rq.redirectToBackWithMsg("장바구니에 추가되었습니다.");
 	}
 
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/remove/{productId}")
+	public String removeItem(@PathVariable Long productId) {
+		cartService.removeItem(rq.getMember(), new Product(productId));
+
+		return rq.redirectToBackWithMsg("장바구니에서 삭제되었습니다.");
+	}
+
 
 }

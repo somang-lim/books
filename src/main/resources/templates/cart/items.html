@@ -32,8 +32,7 @@
 
         <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 mt-4">
           <li th:each="item : ${items}" th:with="product=${item.product}">
-            <input type="checkbox" class="Cart_ItemCheckbox checkbox"
-                   th:value="${item.id}">
+            <input type="checkbox" class="Cart_ItemCheckbox checkbox" th:value="${item.id}">
 
             <th:block th:replace="fragment/cartItem :: cartItem"></th:block>
           </li>
@@ -41,13 +40,12 @@
 
         <div class="grid grid-cols-2 mt-14 gap-2">
           <a href="javascript:;" onclick="RemoveCartItemsForm__submit();"
-             class="btn btn-warning btn-outline">선택삭제</a>
-          <form method="POST" name="removeCartItemsForm" th:action="@{|/cart/removeItems|}" hidden>
+             class="btn btn-warning btn-outline">선택 삭제</a>
+          <form method="POST" name="removeCartItemsForm" th:action="@{|/cart/remove|}" hidden>
             <input type="hidden" name="ids">
           </form>
 
-          <a href="javascript:;" onclick="$(this).next().submit();" class="btn btn-primary">전체
-            주문하기</a>
+          <a href="javascript:;" onclick="$(this).next().submit();" class="btn btn-primary">전체 주문</a>
           <form method="POST" th:action="@{|/order/create|}" hidden></form>
         </div>
 

@@ -42,4 +42,16 @@ public class CartService {
 	public List<CartItem> getItemsByBuyer(Member buyer) {
 		return cartItemRepository.findAllByBuyerId(buyer.getId());
 	}
+
+	@Transactional
+	public boolean removeItem(Member buyer, Product product) {
+		CartItem oldCartItem = cartItemRepository.findByBuyerIdAndProductId(buyer.getId(), product.getId()).orElse(null);
+
+		if (oldCartItem != null) {
+			cartItemRepository.delete(oldCartItem);
+			return true;
+		}
+
+		return false;
+	}
 }
