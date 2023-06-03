@@ -69,4 +69,7 @@ public class CartService {
 		return buyer.getId().equals(cartItem.getBuyer().getId());
 	}
 
+	public List<CartItem> getCartItemsByBuyerIdProductIdIn(Long buyerId, long[] productIds) {
+		return cartItemRepository.findAllByBuyerIdAndProductIdIn(buyerId, productIds);
+	}
 }
