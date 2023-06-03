@@ -6,7 +6,17 @@
 </head>
 
 <main layout:fragment="main">
-    <section th:unless="${posts != null && posts.size > 0}"
+    <!-- case 1. 로그인되어 있지 않은 경우 -->
+    <section th:if="${@rq.isLogout}"
+             class="section section-post-list flex-grow flex items-center justify-center">
+        <div class="text-center">
+            <div>로그인되어 있지 않습니다.</div>
+            <a href="/member/login" class="block text-link mt-2"><i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인 하러가기</a>
+        </div>
+    </section>
+
+    <!-- case 2. 로그인 되어 있고, 글이 없는 경우 -->
+    <section th:if="${posts.size() == 0} AND ${@rq.isLogin}"
              class="section section-post-list flex-grow flex items-center justify-center">
         <div class="text-center">
             <div>글이 존재하지 않습니다.</div>
@@ -14,7 +24,8 @@
         </div>
     </section>
 
-    <section th:if="${posts != null && posts.size > 0}" class="section section-post-list container mx-auto">
+    <!-- case 3. 로그인 되어 있고, 글이 있는 경우 -->
+    <section th:if="${posts != null && posts.size > 0} AND ${@rq.isLogin}" class="section section-post-list container mx-auto">
 
         <div class="px-2 pt-4">
             <a th:href="@{/post/list}" class="float-right text-link">
