@@ -22,7 +22,7 @@ public class PostKeyword extends BaseEntity {
 	private String content;
 
 	public Object getListUrl() {
-		return "/post/tag" + content;
+		return "/post/tag/" + content;
 	}
 
 	public long getExtra_postTagsCount() {

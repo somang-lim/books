@@ -20,6 +20,7 @@ import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
 import com.books.app.post.form.PostForm;
 import com.books.app.post.service.PostService;
+import com.books.app.postTag.entity.PostTag;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +31,9 @@ public class PostController {
 	private final PostService postService;
 	private final Rq rq;
 
+
 	// 글 리스트
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/list")
 	public String list(Model model) {
 		List<Post> posts = postService.list(rq.getId());
@@ -117,6 +120,17 @@ public class PostController {
 		postService.remove(post);
 
 		return Rq.redirectWithMsg("/post/list", "%d번 글이 삭제되었습니다.".formatted(post.getId()));
+	}
+
+	// 글 태그 조회
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/tag/{tagContent}")
+	public String tagList(@PathVariable String tagContent, Model model) {
+		List<PostTag> postTags = postService.getPostTags(tagContent, rq.getMember());
+
+		model.addAttribute("postTags", postTags);
+
+		return "post/tagList";
 	}
 
 }
