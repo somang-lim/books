@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.books.app.member.entity.Member;
 import com.books.app.post.entity.Post;
 import com.books.app.postKeyword.entity.PostKeyword;
 import com.books.app.postKeyword.service.PostKeywordService;
@@ -113,6 +114,10 @@ public class PostTagService {
 
 	public List<PostTag> getPostTags(Long authorId, Long postKeywordId) {
 		return postTagRepository.findAllByMemberIdAndPostKeywordIdOrderByPost_idDesc(authorId, postKeywordId);
+	}
+
+	public List<PostTag> getPostTags(String postKeywordContent, Member author) {
+		return postTagRepository.findAllByPostKeyword_contentAndMemberIdOrderByPost_idDesc(postKeywordContent, author.getId());
 	}
 
 	public List<PostTag> getPostTagsByPostIdIn(long[] ids) {

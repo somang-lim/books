@@ -72,6 +72,23 @@ public class PostService {
 		return postTagService.getPostTags(post);
 	}
 
+	public List<PostTag> getPostTags(String postKeywordContent, Member author) {
+		List<PostTag> postTags = postTagService.getPostTags(postKeywordContent, author);
+
+		loadForPrintDataOnPostTagList(postTags);
+
+		return postTags;
+	}
+
+	private void loadForPrintDataOnPostTagList(List<PostTag> postTags) {
+		List<Post> posts = postTags
+				.stream()
+				.map(PostTag::getPost)
+				.collect(toList());
+
+		loadForPrintData(posts);
+	}
+
 	public Optional<Post> findById(Long postId) {
 		return postRepository.findById(postId);
 	}
