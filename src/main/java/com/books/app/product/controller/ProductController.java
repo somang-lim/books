@@ -68,7 +68,13 @@ public class ProductController {
 
 	@GetMapping("/list")
 	public String showList(Model model) {
-		List<Product> products = productService.findAllForPrintByOrderByIdDesc(rq.getMember());
+		List<Product> products;
+
+		if (rq.getMember() == null) {
+			products = productService.findAllByPrintByIdDesc();
+		} else {
+			products = productService.findAllForPrintByOrderByIdDesc(rq.getMember());
+		}
 
 		model.addAttribute("products", products);
 
