@@ -85,7 +85,7 @@
                 </span>
             </a>
 
-            <a href="/post/list" class="inline-flex">
+            <a href="/post/list" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-rectangle-list"></i>
                 <span class="ml-[2px] hidden lg:block">
                     글 목록
