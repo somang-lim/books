@@ -31,7 +31,9 @@ public class PostController {
 	private final PostService postService;
 	private final Rq rq;
 
+
 	// 글 리스트
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/list")
 	public String list(Model model) {
 		List<Post> posts = postService.list(rq.getId());

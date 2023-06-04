@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import com.books.util.Ut;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -26,7 +28,7 @@ public class SecurityConfig {
 		http
 			.formLogin(
 				formLogin -> formLogin
-					.loginPage("/member/login") // GET
+					.loginPage("/member/login?msg=" + Ut.url.encode("로그인이 필요합니다.")) // GET
 					.loginProcessingUrl("/member/login") // POST
 					.failureHandler(authenticationFailureHandler)
 					.successHandler(authenticationSuccessHandler)
