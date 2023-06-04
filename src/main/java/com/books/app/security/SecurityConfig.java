@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -22,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	private final AuthenticationSuccessHandler authenticationSuccessHandler;
 	private final AuthenticationFailureHandler authenticationFailureHandler;
+	private final AccessDeniedHandler accessDeniedHandler;
+
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,6 +36,9 @@ public class SecurityConfig {
 					.failureHandler(authenticationFailureHandler)
 					.successHandler(authenticationSuccessHandler)
 			)
+			.exceptionHandling()
+			.accessDeniedHandler(accessDeniedHandler)
+			.and()
 			.logout(
 				logout -> logout
 					.logoutUrl("/member/logout")
