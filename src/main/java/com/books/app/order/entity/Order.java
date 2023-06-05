@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import com.books.app.base.entity.BaseEntity;
 import com.books.app.member.entity.Member;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +32,7 @@ import lombok.experimental.SuperBuilder;
 public class Order extends BaseEntity {
 
 	@ManyToOne(fetch = LAZY)
-	private Member author;
+	private Member buyer;
 
 	private String name;
 
@@ -45,7 +46,25 @@ public class Order extends BaseEntity {
 	private LocalDateTime cancelDate;
 	private LocalDateTime refundDate;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)
 	private List<OrderItem> orderItems = new ArrayList<>();
+
+
+	public void addOrderItem(OrderItem orderItem) {
+		orderItem.setOrder(this);
+
+		orderItems.add(orderItem);
+	}
+
+	public void makeName() {
+		String name = orderItems.get(0).getProduct().getSubject();
+
+		if (orderItems.size() > 1) {
+			name += "외 %d권".formatted(orderItems.size() - 1);
+		}
+
+		this.name = name;
+	}
 
 }
