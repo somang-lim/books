@@ -61,10 +61,20 @@ public class Order extends BaseEntity {
 		String name = orderItems.get(0).getProduct().getSubject();
 
 		if (orderItems.size() > 1) {
-			name += "외 %d권".formatted(orderItems.size() - 1);
+			name += " 외 %d권".formatted(orderItems.size() - 1);
 		}
 
 		this.name = name;
+	}
+
+	public int calculatePayPrice() {
+		int payPrice = 0;
+
+		for (OrderItem orderItem : orderItems) {
+			payPrice += orderItem.getSalePrice();
+		}
+
+		return payPrice;
 	}
 
 }

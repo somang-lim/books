@@ -2,6 +2,7 @@ package com.books.app.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,4 +67,28 @@ public class OrderService {
 
 		return order;
 	}
+
+	public Optional<Order> findForPrintById(Long id) {
+		return findById(id);
+	}
+
+	public Optional<Order> findById(Long id) {
+		return orderRepository.findById(id);
+	}
+
+	public boolean actorCanSee(Member actor, Order order) {
+		return actor.getId().equals(order.getBuyer().getId());
+	}
+
+	public boolean isBehindDeleteButton(Long productId) {
+		Order order = orderRepository.findById(productId).orElse(null);
+
+		if (order != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+
 }

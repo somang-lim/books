@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>주문 상세내용</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+
+    <section class="section section-order-detail container mx-auto">
+
+        <div class="px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-basket-shopping"></i>
+                주문 상세내용
+            </h1>
+
+            <div class="mt-2 flex flex-col gap-2">
+                <div class="badge badge-outline" th:text="|주문번호 : ${order.id}번|"></div>
+                <h2 class="flex mt-1">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span class="ml-1" th:text="${order.name}"></span>
+                </h2>
+                <div th:text="|￦ ${@ut.nf(order.calculatePayPrice)}|"></div>
+                <div class="flex justify-end gap-1">
+                    <div class="badge badge-outline" th:if="${order.cancelDate != null}">
+                        <span>취소 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.cancelDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.refundDate != null}">
+                        <span>환불 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.refundDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.payDate != null}">
+                        <span>결제 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.payDate, 'yy-MM-dd')}"></span>
+                    </div>
+                    <div class="badge badge-outline" th:if="${order.createDate != null}">
+                        <span>주문 :</span>
+                        <span class="ml-1"
+                              th:text="${#temporals.format(order.createDate, 'yy-MM-dd')}"></span>
+                    </div>
+                </div>
+
+                <h2 class="font-bold text-lg">
+                    <i class="fa-solid fa-book"></i>
+                    도서 목록
+                </h2>
+
+                <div class="mt-2">
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                        <li th:each="orderItem : ${order.orderItems}" th:with="product = ${orderItem.product}">
+                            <th:block th:replace="fragment/orderItem :: orderItem"></th:block>
+                        </li>
+                    </ul>
+                </div>
+
+                <h2 class="font-bold text-lg mt-10">
+                    <i class="fa-regular fa-credit-card"></i>
+                    결제
+                </h2>
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>
