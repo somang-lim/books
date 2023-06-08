@@ -1,5 +1,7 @@
 package com.books.app.order.controller;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -61,4 +63,15 @@ public class OrderController {
 
 		return "order/detail";
 	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/list")
+	public String showList(Model model) {
+		List<Order> orders = orderService.findAllByBuyerId(rq.getId());
+
+		model.addAttribute("orders", orders);
+
+		return "order/list";
+	}
+
 }

@@ -90,5 +90,8 @@ public class OrderService {
 		return true;
 	}
 
+	public List<Order> findAllByBuyerId(Long buyerId) {
+		return orderRepository.findAllByBuyerIdOrderByIdDesc(buyerId);
+	}
 
 }
