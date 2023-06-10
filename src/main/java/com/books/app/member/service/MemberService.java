@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.books.app.AppConfig;
 import com.books.app.base.dto.RsData;
+import com.books.app.cash.entity.CashLog;
+import com.books.app.cash.service.CashService;
 import com.books.app.email.service.EmailService;
 import com.books.app.emailVerification.service.EmailVerificationService;
 import com.books.app.member.entity.AuthLevel;
@@ -21,6 +23,8 @@ import com.books.app.member.repository.MemberRepository;
 import com.books.app.security.dto.MemberContext;
 import com.books.util.Ut;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +37,8 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailVerificationService emailVerificationService;
 	private final EmailService emailService;
+	private final CashService cashService;
+
 
 	// 회원가입 로직
 	@Transactional
@@ -158,10 +164,10 @@ public class MemberService {
 			return RsData.of("F-1", "해당 필명은 이미 사용 중입니다.");
 		}
 
-		Member __member = memberRepository.findById(member.getId()).orElse(null);
+		member.setNickname(nickname);
+		memberRepository.save(member);
 
-		__member.setNickname(nickname);
-		forceAuthentication(__member);
+		forceAuthentication(member);
 
 		return RsData.of("S-1", "해당 필명으로 활동을 시작합니다.");
 	}
@@ -181,5 +187,39 @@ public class MemberService {
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
+	}
+
+	public Long getRestCash(Member member) {
+		return memberRepository.findById(member.getId()).get().getRestCash();
+	}
+
+	@Transactional
+	public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
+		CashLog cashLog = cashService.addCash(member, price, eventType);
+
+		long newRestCash = member.getRestCash() + cashLog.getPrice();
+		member.setRestCash(newRestCash);
+
+		memberRepository.save(member);
+
+		return RsData.of(
+				"S-1",
+				"성공",
+				new AddCashRsDataBody(cashLog, newRestCash)
+		);
+	}
+
+	@Transactional
+	public void setRestCash(Member buyer, long restCash) {
+		buyer.setRestCash(restCash);
+
+		memberRepository.save(buyer);
+	}
+
+	@Data
+	@AllArgsConstructor
+	public static class AddCashRsDataBody {
+		CashLog cashLog;
+		Long newRestCash;
 	}
 }

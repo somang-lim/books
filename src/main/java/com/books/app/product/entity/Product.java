@@ -111,4 +111,16 @@ public class Product extends BaseEntity {
 		return getExtra_actor_cartItem() != null;
 	}
 
+	public boolean isOrderable() {
+		return true;
+	}
+
+	public int getSalePrice() {
+		return getPrice();
+	}
+
+	public int getWholesalePrice() {
+		return (int) Math.ceil(getPrice() * 0.4);
+	}
+
 }

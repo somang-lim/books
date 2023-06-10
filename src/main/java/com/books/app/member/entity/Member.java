@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
@@ -36,6 +37,8 @@ public class Member extends BaseEntity {
 	private String email;
 
 	private boolean emailVerified;
+
+	private long restCash;
 
 	private String nickname;
 
