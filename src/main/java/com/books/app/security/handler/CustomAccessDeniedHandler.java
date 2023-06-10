@@ -19,9 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
 		String uri = request.getRequestURI();
-		log.info("uri: " + uri);
 
 		if (uri.equals("/post/write")) {
 			response.sendRedirect("/member/beAuthor?msg=" + Ut.url.encode("먼저 필명을 작성해주세요."));

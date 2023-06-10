@@ -158,10 +158,10 @@ public class MemberService {
 			return RsData.of("F-1", "해당 필명은 이미 사용 중입니다.");
 		}
 
-		Member __member = memberRepository.findById(member.getId()).orElse(null);
+		member.setNickname(nickname);
+		memberRepository.save(member);
 
-		__member.setNickname(nickname);
-		forceAuthentication(__member);
+		forceAuthentication(member);
 
 		return RsData.of("S-1", "해당 필명으로 활동을 시작합니다.");
 	}
