@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.books.app.AppConfig;
 import com.books.app.base.dto.RsData;
+import com.books.app.cash.entity.CashLog;
+import com.books.app.cash.service.CashService;
 import com.books.app.email.service.EmailService;
 import com.books.app.emailVerification.service.EmailVerificationService;
 import com.books.app.member.entity.AuthLevel;
@@ -21,6 +23,8 @@ import com.books.app.member.repository.MemberRepository;
 import com.books.app.security.dto.MemberContext;
 import com.books.util.Ut;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +37,8 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailVerificationService emailVerificationService;
 	private final EmailService emailService;
+	private final CashService cashService;
+
 
 	// 회원가입 로직
 	@Transactional
@@ -181,5 +187,32 @@ public class MemberService {
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
+	}
+
+	public Long getRestCash(Member member) {
+		return memberRepository.findById(member.getId()).get().getRestCash();
+	}
+
+	@Transactional
+	public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
+		CashLog cashLog = cashService.addCash(member, price, eventType);
+
+		long newRestCash = member.getRestCash() + cashLog.getPrice();
+		member.setRestCash(newRestCash);
+
+		memberRepository.save(member);
+
+		return RsData.of(
+				"S-1",
+				"성공",
+				new AddCashRsDataBody(cashLog, newRestCash)
+		);
+	}
+
+	@Data
+	@AllArgsConstructor
+	public static class AddCashRsDataBody {
+		CashLog cashLog;
+		Long newRestCash;
 	}
 }
