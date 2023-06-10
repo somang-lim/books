@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.books.app.cart.entity.CartItem;
 import com.books.app.cart.service.CartService;
 import com.books.app.member.entity.Member;
+import com.books.app.order.entity.Order;
 import com.books.app.post.entity.Post;
 import com.books.app.postKeyword.entity.PostKeyword;
 import com.books.app.postKeyword.service.PostKeywordService;
@@ -45,17 +46,29 @@ public class ProductService {
 	public Product create(Member author, ProductForm productForm) {
 		PostKeyword postKeyword = postKeywordService.findById(productForm.getPostKeywordId()).get();
 
+		return create(author, productForm.getSubject(), productForm.getPrice(), postKeyword, productForm.getProductTagContents());
+	}
+
+	@Transactional
+	public Product create(Member author, String subject, int price, String postKeywordContent, String productTagContents) {
+		PostKeyword postKeyword = postKeywordService.findByContentOrSave(postKeywordContent);
+
+		return create(author, subject, price, postKeyword, productTagContents);
+	}
+
+	@Transactional
+	public Product create(Member author, String subject, int price, PostKeyword postKeyword, String productTagContents) {
 		Product product = Product
 			.builder()
 			.author(author)
 			.postKeyword(postKeyword)
-			.subject(productForm.getSubject())
-			.price(productForm.getPrice())
+			.subject(subject)
+			.price(price)
 			.build();
 
 		productRepository.save(product);
 
-		applyProductTags(product, productForm.getProductTagContents());
+		applyProductTags(product, productTagContents);
 
 		return product;
 	}
@@ -240,4 +253,5 @@ public class ProductService {
 
 		return product;
 	}
+
 }

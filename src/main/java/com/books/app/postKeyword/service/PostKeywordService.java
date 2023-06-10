@@ -60,4 +60,9 @@ public class PostKeywordService {
 	public List<PostKeyword> findByMemberId(Long authorId) {
 		return postKeywordRepository.getQslAllByAuthorId(authorId);
 	}
+
+	public PostKeyword findByContentOrSave(String content) {
+		return save(content);
+	}
+
 }
