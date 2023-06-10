@@ -78,7 +78,7 @@
                 </span>
             </a>
 
-            <a href="/order/list" class="inline-flex">
+            <a href="/order/list" class="inline-flex" th:if="${@rq.login}">
                 <i class="fa-solid fa-basket-shopping"></i>
                 <span class="ml-[2px] hidden lg:block">
                     주문 목록
