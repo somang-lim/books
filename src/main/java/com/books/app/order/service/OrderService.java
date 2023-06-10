@@ -1,5 +1,7 @@
 package com.books.app.order.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,6 @@ import com.books.app.order.entity.OrderItem;
 import com.books.app.order.repository.OrderRepository;
 import com.books.app.product.entity.Product;
 
-import ch.qos.logback.core.joran.conditional.IfAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -203,4 +204,64 @@ public class OrderService {
 		return RsData.of("S-1", "취소할 수 있습니다.");
 	}
 
+	@Transactional
+	public RsData refund(Long orderId, Member actor) {
+		Order order = findById(orderId).orElse(null);
+
+		if (order == null) {
+			return RsData.of("F-2", "결제 상품을 찾을 수 없습니다.");
+		}
+
+		return refund(order, actor);
+	}
+
+	@Transactional
+	public RsData refund(Order order, Member actor) {
+		RsData rsData = actorCanRefund(actor, order);
+
+		if (rsData.isFail()) {
+			return rsData;
+		}
+
+		order.setCancelDone();
+
+		int payPrice = order.getPayPrice();
+		memberService.addCash(order.getBuyer(), payPrice, "주문__%d__환불__예치금".formatted(order.getId()));
+
+		order.setRefundDone();
+		orderRepository.save(order);
+
+		myBookService.remove(order);
+
+		return RsData.of("S-1", "환불되었습니다.");
+	}
+
+	@Transactional
+	public RsData actorCanRefund(Member actor, Order order) {
+		if (order.isCanceled()) {
+			return RsData.of("F-1", "이미 취소되었습니다.");
+		}
+
+		if (order.isRefunded()) {
+			return RsData.of("F-4", "이미 환불되었습니다.");
+		}
+
+		if (!order.isPaid()) {
+			return RsData.of("F-5", "결제 완료 후 환불이 가능합니다.");
+		}
+
+		if (!actor.getId().equals(order.getBuyer().getId())) {
+			return RsData.of("F-2", "권한이 없습니다.");
+		}
+
+		long between = ChronoUnit.MINUTES.between(order.getPayDate(), LocalDateTime.now());
+
+		if (between > 10) {
+			return RsData.of("F-3", "결제 완료 후 10분이 지났으므로, 환불 불가능합니다.");
+		}
+
+		return RsData.of("S-1", "환불 가능합니다.");
+	}
+
 }
+

@@ -32,4 +32,11 @@ public class MyBookService {
 		return RsData.of("S-1", "나의 책장에 추가되었습니다.");
 	}
 
+	@Transactional
+	public void remove(Order order) {
+		order.getOrderItems()
+				.stream()
+				.forEach(orderItem -> myBookRepository.deleteByProductIdAndOwnerId(orderItem.getProduct().getId(), order.getBuyer().getId()));
+	}
+
 }

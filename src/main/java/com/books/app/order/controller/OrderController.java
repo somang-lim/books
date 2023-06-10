@@ -199,4 +199,16 @@ public class OrderController {
 		}
 	}
 
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/{orderId}/refund")
+	public String refund(@PathVariable Long orderId) {
+		RsData rsData = orderService.refund(orderId, rq.getMember());
+
+		if (rsData.isFail()) {
+			return Rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
+		}
+
+		return Rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
+	}
+
 }

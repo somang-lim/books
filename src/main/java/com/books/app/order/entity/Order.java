@@ -80,6 +80,7 @@ public class Order extends BaseEntity {
 	public boolean isPayable() {
 		if (isPaid) return false;
 		if (isCanceled) return false;
+		if (isRefunded) return false;
 
 		return true;
 	}
@@ -92,6 +93,33 @@ public class Order extends BaseEntity {
 		}
 
 		isPaid = true;
+	}
+
+	public void setCancelDone() {
+		cancelDate = LocalDateTime.now();
+
+		isCanceled = true;
+	}
+
+	public int getPayPrice() {
+		int payPrice = 0;
+
+		for (OrderItem orderItem : orderItems) {
+			payPrice += orderItem.getPayPrice();
+		}
+
+		return payPrice;
+	}
+
+	public void setRefundDone() {
+		refundDate = LocalDateTime.now();
+
+		for (OrderItem orderItem : orderItems) {
+			orderItem.setRefundDone();
+		}
+
+		isPaid = false;
+		isRefunded = true;
 	}
 
 }

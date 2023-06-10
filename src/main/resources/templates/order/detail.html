@@ -35,17 +35,17 @@
                 </h2>
                 <div th:text="|￦ ${@ut.nf(order.calculatePayPrice)}|"></div>
                 <div class="flex justify-end gap-1">
-                    <div class="badge badge-outline" th:if="${order.cancelDate != null}">
+                    <div class="badge badge-outline" th:if="${order.cancelDate != null && order.isCanceled}">
                         <span>취소 :</span>
                         <span class="ml-1"
                               th:text="${#temporals.format(order.cancelDate, 'yy-MM-dd')}"></span>
                     </div>
-                    <div class="badge badge-outline" th:if="${order.refundDate != null}">
+                    <div class="badge badge-outline" th:if="${order.refundDate != null && order.isRefunded}">
                         <span>환불 :</span>
                         <span class="ml-1"
                               th:text="${#temporals.format(order.refundDate, 'yy-MM-dd')}"></span>
                     </div>
-                    <div class="badge badge-outline" th:if="${order.payDate != null}">
+                    <div class="badge badge-outline" th:if="${order.payDate != null && order.isPaid}">
                         <span>결제 :</span>
                         <span class="ml-1"
                               th:text="${#temporals.format(order.payDate, 'yy-MM-dd')}"></span>
@@ -75,7 +75,7 @@
                     결제
                 </h2>
 
-                <div th:if="${!@orderService.actorCanCancel(@rq.member, order).isFail()}">
+                <div th:if="${!@orderService.actorCanCancel(@rq.member, order).isFail}">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">보유 예치금</span>
@@ -130,14 +130,26 @@
                         </a>
                         <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
 
+                        <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="ml-2">환불</span>
+                        </a>
+                        <form th:action="@{|/order/${order.id}/refund|}" method="POST" hidden></form>
+
                         <a th:if="${order.isCanceled()}"
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
-                            <span class="ml-2">취소된 주문 입니다.</span>
+                            <span>취소된 주문 입니다.</span>
                         </a>
 
                         <a th:if="${order.isPaid()}"
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
-                            <span class="ml-2">결제 완료된 주문 입니다.</span>
+                            <span>결제 완료된 주문 입니다.</span>
+                        </a>
+
+                        <a th:if="${order.isRefunded()}"
+                           class="btn btn-sm btn-outline btn-primary btn-disabled">
+                            <span>환불된 주문입니다.</span>
                         </a>
                     </div>
                 </div>
