@@ -80,8 +80,18 @@ public class OrderService {
 		return actor.getId().equals(order.getBuyer().getId());
 	}
 
-	public boolean isBehindDeleteButton(Long productId) {
-		Order order = orderRepository.findById(productId).orElse(null);
+	public boolean isBehindDeleteButton(Long orderId, Long productId) {
+		Order order = orderRepository.findByIdAndOrderItems_productId(orderId, productId).orElse(null);
+
+		if (order != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean isBehindButton(Long authorId, Long productId) {
+		Order order = orderRepository.findByBuyerIdAndOrderItems_productId(authorId, productId).orElse(null);
 
 		if (order != null) {
 			return false;
