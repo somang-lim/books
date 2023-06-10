@@ -77,4 +77,21 @@ public class Order extends BaseEntity {
 		return payPrice;
 	}
 
+	public boolean isPayable() {
+		if (isPaid) return false;
+		if (isCanceled) return false;
+
+		return true;
+	}
+
+	public void setPaymentDone() {
+		payDate = LocalDateTime.now();
+
+		for (OrderItem orderItem : orderItems) {
+			orderItem.setPaymentDone();
+		}
+
+		isPaid = true;
+	}
+
 }

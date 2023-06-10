@@ -209,6 +209,13 @@ public class MemberService {
 		);
 	}
 
+	@Transactional
+	public void setRestCash(Member buyer, long restCash) {
+		buyer.setRestCash(restCash);
+
+		memberRepository.save(buyer);
+	}
+
 	@Data
 	@AllArgsConstructor
 	public static class AddCashRsDataBody {
