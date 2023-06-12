@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>예치금 충전</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <script src="https://js.tosspayments.com/v1"></script>
+
+    <script th:inline="javascript">
+        const orderId = /*[[ ${@rq.id} ]]*/ null;
+        const buyerName = /*[[ ${@rq.member.username} ]]*/ null;
+        const orderName = /*[[ ${@rq.member.nickname} ]]*/ null;
+        const toss_clientKey = /*[[ ${@environment.getProperty('custom.tossPayments.clientKey')} ]]*/ null;
+    </script>
+
+    <section class="section section-login flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-money-bill"></i>
+
+                예치금 충전
+            </h1>
+
+            <script>
+                let MemberBeAuthor__submitDone = false;
+
+                function MemberBeAuthor__submit(form) {
+                    if (MemberBeAuthor__submitDone) {
+                        return;
+                    }
+
+                    form.nickname.value = form.nickname.value.trim();
+
+                    if (form.nickname.value.length == 0) {
+                        warningModal("필명을 입력해주세요.");
+                        form.nickname.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+                    MemberBeAuthor__submitDone = true;
+                }
+            </script>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">현재 예치금</span>
+                    <div class="badge badge-primary" th:text="${#numbers.formatInteger(@rq.member.restCash, 3, 'COMMA') + ' 원'}"></div>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">충전할 금액</span>
+                </label>
+                <input type="number" id="PaymentForm__addRestCash"
+                       class="input input-bordered min-w-[190px]" min="0"
+                       placeholder="충전할 금액을 적어주세요.">
+            </div>
+
+            <div class="form-control mt-3">
+                <span>→ 예치금 충전은 가상계좌로만 가능합니다.</span>
+            </div>
+
+            <div class="form-control mt-3">
+                <button onclick="payment();" class="btn btn-primary">
+                    <i class="fa-solid fa-money-simple-from-bracket"></i>
+                    <span class="ml-2">충전</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const $PaymentForm__addRestCash = $("#PaymentForm__addRestCash");
+
+        const tossPayments = TossPayments(toss_clientKey);
+
+        function payment() {
+            let addRestCash = parseInt($PaymentForm__addRestCash.val());
+
+            if (isNaN(addRestCash)) {
+                alert("충전할 금액을 입력하세요.");
+                return;
+            }
+
+            const method = "가상계좌";
+
+            const paymentData = {
+                amount: addRestCash,
+                orderId: "add__" + orderId + "__" + (Math.random() + "").substring(2),
+                orderName,
+                customerName: buyerName,
+                successUrl: window.location.origin + "/member/" + orderId + "/success",
+                failUrl: window.location.origin + "/member/" + orderId + "/fail"
+            };
+
+            tossPayments.requestPayment(method, paymentData);
+        }
+    </script>
+
+</main>
+</body>
+</html>

@@ -1,19 +1,39 @@
 package com.books.app.member.controller;
 
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 
 import com.books.app.base.dto.RsData;
 import com.books.app.base.rq.Rq;
 import com.books.app.member.entity.Member;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 	private final MemberService memberService;
 	private final Rq rq;
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final ObjectMapper objectMapper;
+
 
 	// 회원가입 폼
 	@PreAuthorize("isAnonymous()")
@@ -152,6 +175,68 @@ public class MemberController {
 		}
 
 		return Rq.redirectWithMsg("/", rsData);
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/addRestCash")
+	public String addRestCash() {
+		return "member/addRestCash";
+	}
+
+	@PostConstruct
+	private void init() {
+		restTemplate.setErrorHandler(new ResponseErrorHandler() {
+			@Override
+			public boolean hasError(ClientHttpResponse response) throws IOException {
+				return false;
+			}
+			@Override
+			public void handleError(ClientHttpResponse response) throws IOException {
+			}
+		});
+	}
+
+	@Value("${custom.tossPayments.secretKey}")
+	private String SECRET_KEY;
+
+	@RequestMapping("/{id}/success")
+	public String addRestCash(
+		@PathVariable Long id,
+		@RequestParam String paymentKey,
+		@RequestParam String orderId,
+		@RequestParam Long amount,
+		Model model
+	) throws Exception {
+		Member member = memberService.findById(id).get();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((SECRET_KEY + ":").getBytes()));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		Map<String, String> payloadMap = new HashMap<>();
+		payloadMap.put("orderId", orderId);
+		payloadMap.put("amount", String.valueOf(amount));
+
+		HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(payloadMap), headers);
+
+		ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(
+			"https://api.tosspayments.com/v1/payments/" + paymentKey, request, JsonNode.class);
+
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			memberService.addCash(member, amount);
+
+			return Rq.redirectWithMsg(
+				"/member/profile",
+				"예치금 충전이 완료되었습니다."
+			);
+		} else {
+			JsonNode failNode = responseEntity.getBody();
+			model.addAttribute("message", failNode.get("message").asText());
+			model.addAttribute("code", failNode.get("code").asText());
+
+			return "member/addRestCashFail";
+		}
+
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.books.app.member.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -108,6 +109,10 @@ public class MemberService {
 		return emailService.sendEmail(email, subject, body);
 	}
 
+	public Optional<Member> findById(Long id) {
+		return memberRepository.findById(id);
+	}
+
 	public Member findByEmail(String email) {
 		return memberRepository.findByEmail(email).orElse(null);
 	}
@@ -194,6 +199,11 @@ public class MemberService {
 	}
 
 	@Transactional
+	public RsData<AddCashRsDataBody> addCash(Member member, long price) {
+		return addCash(member, price, "충전__계좌이체");
+	}
+
+	@Transactional
 	public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
 		CashLog cashLog = cashService.addCash(member, price, eventType);
 
@@ -201,6 +211,8 @@ public class MemberService {
 		member.setRestCash(newRestCash);
 
 		memberRepository.save(member);
+
+		forceAuthentication(member);
 
 		return RsData.of(
 				"S-1",
