@@ -1,5 +1,6 @@
 package com.books.app.member.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,6 +227,10 @@ public class MemberService {
 		buyer.setRestCash(restCash);
 
 		memberRepository.save(buyer);
+	}
+
+	public List<CashLog> restCashLog(Member member) {
+		return cashService.getCashLog(member);
 	}
 
 	@Data

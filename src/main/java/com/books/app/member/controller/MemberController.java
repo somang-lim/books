@@ -3,7 +3,9 @@ package com.books.app.member.controller;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.books.app.base.dto.RsData;
 import com.books.app.base.rq.Rq;
+import com.books.app.cash.entity.CashLog;
 import com.books.app.member.entity.Member;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
@@ -236,7 +239,18 @@ public class MemberController {
 
 			return "member/addRestCashFail";
 		}
-
 	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/restCashLog")
+	public String restCashLog(Model model) {
+		Member member = rq.getMember();
+
+		List<CashLog> cashLogs = memberService.restCashLog(member);
+		model.addAttribute("cashLogs", cashLogs);
+
+		return "member/restCashLog";
+	}
+
 
 }

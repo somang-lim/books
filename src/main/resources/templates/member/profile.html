@@ -49,7 +49,10 @@
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">예치금</span>
-                        <a href="/member/addRestCash" class="badge badge-outline badge-warning">예치금 충전</a>
+                        <div>
+                            <a href="/member/addRestCash" class="badge badge-outline badge-secondary">예치금 충전</a>
+                            <a href="/member/restCashLog" class="badge badge-outline badge-secondary">예치금 내역</a>
+                        </div>
                     </label>
                     <div class="badge badge-primary"
                          th:text="${@rq.member.restCash > 0 ?
