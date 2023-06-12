@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-book-open"></i>
                 <span th:text="${order.name}"></span>
             </h2>
-            <div th:text="|￦ ${@ut.nf(order.calculatePayPrice)}|"></div>
+            <div th:text="|￦ ${#numbers.formatInteger(@ut.nf(order.calculatePayPrice), 3, 'COMMA')}|"></div>
             <div class="flex justify-end gap-1">
                 <div class="badge badge-outline" th:if="${order.cancelDate != null}">
                     <span>취소 :</span>

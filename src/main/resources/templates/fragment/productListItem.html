@@ -20,7 +20,7 @@
                     <div th:text="${product.author.name}"></div>
                 </div>
             </h2>
-            <div th:text="|￦ ${@ut.nf(product.price)}|"></div>
+            <div th:text="|￦ ${#numbers.formatInteger(@ut.nf(product.price), 3, 'COMMA')}|"></div>
             <div th:utext="${product.extra_productTagLinks}"></div>
             <div class="flex justify-end">
                 <div class="badge badge-outline">

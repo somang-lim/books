@@ -25,7 +25,7 @@
                     <div th:text="${product.author.name}"></div>
                 </div>
 
-                <div th:text="|￦ ${@ut.nf(product.price)}|"></div>
+                <div th:text="|￦ ${#numbers.formatInteger(@ut.nf(product.price), 3, 'COMMA')}|"></div>
 
                 <div class="flex flex-wrap gap-3">
                     <div class="flex flex-wrap gap-3">
