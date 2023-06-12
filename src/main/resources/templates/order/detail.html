@@ -33,7 +33,7 @@
                     <i class="fa-solid fa-book-open"></i>
                     <span class="ml-1" th:text="${order.name}"></span>
                 </h2>
-                <div th:text="|￦ ${@ut.nf(order.calculatePayPrice)}|"></div>
+                <div th:text="|￦ ${#numbers.formatInteger(@ut.nf(order.calculatePayPrice), 3, 'COMMA')}|"></div>
                 <div class="flex justify-end gap-1">
                     <div class="badge badge-outline" th:if="${order.cancelDate != null && order.isCanceled}">
                         <span>취소 :</span>
@@ -80,7 +80,7 @@
                         <label class="label">
                             <span class="label-text">보유 예치금</span>
                         </label>
-                        <span th:text="|￦ ${@ut.nf(actorRestCash)}|"></span>
+                        <span th:text="|￦ ${#numbers.formatInteger(@ut.nf(actorRestCash), 3, 'COMMA')}|"></span>
                     </div>
 
                     <div class="form-control">
@@ -100,7 +100,7 @@
                         </label>
                         <div class="flex items-center gap-2">
                             <input type="number" id="PaymentForm__useRestCash"
-                                   th:placeholder="|￦ 0 ~ ￦ ${@ut.nf(maxUseRestCash)}|"
+                                   th:placeholder="|￦ 0 ~ ￦ ${#numbers.formatInteger(@ut.nf(maxUseRestCash), 3, 'COMMA')}|"
                                    class="input input-bordered min-w-[190px]" min="0" th:max="${maxUseRestCash}"
                                    onkeydown="PaymentForm__updateForm();"
                                    onkeyup="PaymentForm__updateForm();"
@@ -124,14 +124,14 @@
                         </button>
 
                         <a th:if="${@orderService.actorCanCancel(@rq.member, order).isSuccess()}" href="javascript:;"
-                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           onclick="if (confirm('주문을 취소하시겠습니까?')) $(this).next().submit();" class="btn btn-sm btn-outline">
                             <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">취소</span>
                         </a>
                         <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
 
                         <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
-                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           onclick="if (confirm('환불하시겠습니까?')) $(this).next().submit();" class="btn btn-sm btn-outline">
                             <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">환불</span>
                         </a>
@@ -141,6 +141,13 @@
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
                             <span>취소된 주문 입니다.</span>
                         </a>
+
+                        <a th:if="${order.isCanceled()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           <i class="fa-solid fa-basket-shopping"></i>
+                            <span class="ml-2">재주문</span>
+                        </a>
+                        <form th:action="@{|/order/${order.id}/reOrder|}" method="POST" hidden></form>
 
                         <a th:if="${order.isPaid()}"
                            class="btn btn-sm btn-outline btn-primary btn-disabled">

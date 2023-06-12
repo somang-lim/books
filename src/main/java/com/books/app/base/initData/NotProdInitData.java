@@ -98,11 +98,11 @@ public class NotProdInitData {
 			Product product4 = productService.create(member2, "상품명4", 60_000, "HTML", "#IT #HTML");
 
 
-			memberService.addCash(member1, 10_000, "충전__무통장입금");
-			memberService.addCash(member1, 20_000, "충전__무통장입금");
+			memberService.addCash(member1, 10_000, "충전__계좌이체");
+			memberService.addCash(member1, 20_000, "충전__계좌이체");
 			memberService.addCash(member1, -5_000, "출금__일반");
-			memberService.addCash(member1, 1_000_000, "충전__무통장입금");
-			memberService.addCash(member2, 2_000_000, "충전__무통장입금");
+			memberService.addCash(member1, 1_000_000, "충전__계좌이체");
+			memberService.addCash(member2, 2_000_000, "충전__계좌이체");
 
 
 			class Helper {

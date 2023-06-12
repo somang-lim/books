@@ -112,6 +112,18 @@ public class OrderController {
 		return Rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
 	}
 
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/{orderId}/reOrder")
+	public String reOrder(@PathVariable Long orderId) {
+		RsData rsData = orderService.reOrder(orderId, rq.getMember());
+
+		if (rsData.isFail()) {
+			return Rq.redirectWithErrorMsg("/order/%d".formatted(orderId), rsData);
+		}
+
+		return Rq.redirectWithMsg("/order/%d".formatted(orderId), rsData);
+	}
+
 	@PostConstruct
 	private void init() {
 		restTemplate.setErrorHandler(new ResponseErrorHandler() {

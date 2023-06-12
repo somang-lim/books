@@ -48,6 +48,19 @@
 
                 <div class="form-control">
                     <label class="label">
+                        <span class="label-text">예치금</span>
+                        <div>
+                            <a href="/member/addRestCash" class="badge badge-outline badge-secondary">예치금 충전</a>
+                            <a href="/member/restCashLog" class="badge badge-outline badge-secondary">예치금 내역</a>
+                        </div>
+                    </label>
+                    <div class="badge badge-primary"
+                         th:text="${@rq.member.restCash > 0 ?
+                                    #numbers.formatInteger(@rq.member.restCash, 3, 'COMMA') + ' 원' : '충전된 예치금이 없습니다.'}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
                         <span class="label-text">프로필이미지</span>
                     </label>
                     <svg width="100" height="100" th:data-jdenticon-value="${@rq.member.jdenticon}"></svg>

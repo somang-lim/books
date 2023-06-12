@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+
+<head>
+    <title>예치금 내역</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-3xl w-full px-2 pt-4">
+            <div>
+                <h1 class="font-bold text-lg">
+                    <i class="fa-solid fa-circle-info"></i>
+                    예치금 내역
+                </h1>
+
+                    <div class="text-end">
+                        <a href="javascript:history.back()" class="badge badge-outline badge-primary">뒤로가기</a>
+                    </div>
+            </div>
+
+            <table class="table w-full mt-5">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">일시</th>
+                    <th scope="col">내역</th>
+                    <th scope="col">금액</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                <tr th:each="cashLog : ${cashLogs}">
+                    <th scope="row" th:text="${cashLogStat.count}">#</th>
+                    <td th:text="${#temporals.format(cashLog.createDate, 'yy-MM-dd HH:mm')}">일시</td>
+                    <td th:text="${cashLog.eventType}">내역</td>
+                    <td th:text="${#numbers.formatInteger(cashLog.price, 3, 'COMMA')}">금액</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>
