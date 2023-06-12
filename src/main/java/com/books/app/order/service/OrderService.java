@@ -60,6 +60,22 @@ public class OrderService {
 
 	@Transactional
 	public Order create(Member buyer, List<OrderItem> orderItems) {
+		int existsOrderCount = 0;
+
+		Order existsOrder = null;
+		for (OrderItem orderItem : orderItems) {
+			existsOrder = orderRepository.findByBuyerIdAndOrderItems_productId(buyer.getId(), orderItem.getProduct().getId()).orElse(null);
+			if (existsOrder != null) {
+				existsOrderCount++;
+			}
+		}
+
+		if (existsOrderCount == orderItems.size()) {
+			reOrder(existsOrder.getId(), buyer);
+
+			return existsOrder;
+		}
+
 		Order order = Order
 				.builder()
 				.buyer(buyer)
@@ -89,6 +105,15 @@ public class OrderService {
 		Order order = orderRepository.findByIdAndOrderItems_productId(orderId, productId).orElse(null);
 
 		if (order != null) {
+
+			if (order.isCanceled()) {
+				return true;
+			}
+
+			if (order.isRefunded()) {
+				return true;
+			}
+
 			return false;
 		}
 
@@ -99,6 +124,15 @@ public class OrderService {
 		Order order = orderRepository.findByBuyerIdAndOrderItems_productId(authorId, productId).orElse(null);
 
 		if (order != null) {
+
+			if (order.isCanceled()) {
+				return true;
+			}
+
+			if (order.isRefunded()) {
+				return true;
+			}
+
 			return false;
 		}
 
@@ -175,9 +209,20 @@ public class OrderService {
 			return rsData;
 		}
 
-		order.setCanceled(true);
+		order.setCancelDone();
 
 		return RsData.of("S-1", "취소되었습니다.");
+	}
+
+	@Transactional
+	public RsData reOrder(Long orderId, Member member) {
+		Order order = findById(orderId).get();
+
+		if (order.isCanceled()) {
+			order.setCanceled(false);
+		}
+
+		return RsData.of("S-1", "재주문되었습니다.");
 	}
 
 	public boolean actorCanSee(Member actor, Order order) {
@@ -262,6 +307,5 @@ public class OrderService {
 
 		return RsData.of("S-1", "환불 가능합니다.");
 	}
-
 }
 

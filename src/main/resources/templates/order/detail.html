@@ -124,14 +124,14 @@
                         </button>
 
                         <a th:if="${@orderService.actorCanCancel(@rq.member, order).isSuccess()}" href="javascript:;"
-                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           onclick="if (confirm('주문을 취소하시겠습니까?')) $(this).next().submit();" class="btn btn-sm btn-outline">
                             <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">취소</span>
                         </a>
                         <form th:action="@{|/order/${order.id}/cancel|}" method="POST" hidden></form>
 
                         <a th:if="${@orderService.actorCanRefund(@rq.member, order).isSuccess()}" href="javascript:;"
-                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           onclick="if (confirm('환불하시겠습니까?')) $(this).next().submit();" class="btn btn-sm btn-outline">
                             <i class="fa-solid fa-xmark"></i>
                             <span class="ml-2">환불</span>
                         </a>
@@ -141,6 +141,13 @@
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
                             <span>취소된 주문 입니다.</span>
                         </a>
+
+                        <a th:if="${order.isCanceled()}" href="javascript:;"
+                           onclick="$(this).next().submit();" class="btn btn-sm btn-outline">
+                           <i class="fa-solid fa-basket-shopping"></i>
+                            <span class="ml-2">재주문</span>
+                        </a>
+                        <form th:action="@{|/order/${order.id}/reOrder|}" method="POST" hidden></form>
 
                         <a th:if="${order.isPaid()}"
                            class="btn btn-sm btn-outline btn-primary btn-disabled">
