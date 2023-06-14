@@ -307,5 +307,9 @@ public class OrderService {
 
 		return RsData.of("S-1", "환불 가능합니다.");
 	}
+
+	public List<String> findByDateFormat_PayDate() {
+		return orderRepository.findByDateFormat_PayDate();
+	}
 }
 

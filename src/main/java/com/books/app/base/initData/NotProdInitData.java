@@ -1,5 +1,6 @@
 package com.books.app.base.initData;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import com.books.app.product.service.ProductService;
 @Configuration
 @Profile({"dev", "test"})
 public class NotProdInitData {
-	// initData가 2번 이상 실행되지 않도록 설정
+	// initData가 1번 이상 실행되지 않도록 설정
 	private boolean initDataDone = false;
 
 	@Bean
@@ -52,6 +53,16 @@ public class NotProdInitData {
 			Member member2 = memberService.join(joinForm);
 			memberService.forceEmailVerify(member2);
 			memberService.beAuthor(member2, "mark");
+
+			joinForm = new JoinForm("user3", "1234", "user3@test.com");
+			Member member3 = memberService.join(joinForm);
+			memberService.forceEmailVerify(member3);
+			memberService.beAuthor(member3, "원우");
+
+			joinForm = new JoinForm("user4", "1234", "user4@test.com");
+			Member member4 = memberService.join(joinForm);
+			memberService.forceEmailVerify(member4);
+			memberService.beAuthor(member4, "미연");
 
 			joinForm = new JoinForm("admin", "1234", "admin@test.com");
 			Member admin = memberService.join(joinForm);
@@ -108,6 +119,8 @@ public class NotProdInitData {
 			memberService.addCash(member1, -5_000, "출금__일반");
 			memberService.addCash(member1, 1_000_000, "충전__계좌이체");
 			memberService.addCash(member2, 2_000_000, "충전__계좌이체");
+			memberService.addCash(member3, 800_000, "충전__계좌이체");
+			memberService.addCash(member4, 1_000_000, "충전__계좌이체");
 
 
 			class Helper {
@@ -129,6 +142,52 @@ public class NotProdInitData {
 							product3
 				)
 			);
+
+			int order1PayPrice = order1.calculatePayPrice();
+			orderService.payByRestCashOnly(order1);
+			order1.setPayDate(LocalDateTime.now().minusMonths(1));
+			orderRepository.save(order1);
+
+			Order order2 = helper.order(member2, Arrays.asList(
+					product2
+				)
+			);
+
+			orderService.payByRestCashOnly(order2);
+			order2.setPayDate(LocalDateTime.now().minusMonths(2));
+			orderRepository.save(order2);
+
+			Order order3 = helper.order(member3, Arrays.asList(
+					product1,
+					product2,
+					product3
+				)
+			);
+
+			Order order4 = helper.order(member4, Arrays.asList(
+					product2,
+					product3,
+					product4
+				)
+			);
+
+			Order order5 = helper.order(member4, Arrays.asList(
+					product1,
+					product2
+				)
+			);
+
+			orderService.payByRestCashOnly(order4);
+
+			orderService.refund(order4, member4);
+
+			orderService.payByRestCashOnly(order5);
+
+			Order order6 = helper.order(member2, Arrays.asList(
+					product4
+				)
+			);
+
 		};
 	}
 }
