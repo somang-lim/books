@@ -17,6 +17,7 @@ import com.books.app.member.service.MemberService;
 import com.books.app.myBook.service.MyBookService;
 import com.books.app.order.entity.Order;
 import com.books.app.order.entity.OrderItem;
+import com.books.app.order.repository.OrderItemRepository;
 import com.books.app.order.repository.OrderRepository;
 import com.books.app.product.entity.Product;
 
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final OrderItemRepository orderItemRepository;
 	private final CartService cartService;
 	private final MemberService memberService;
 	private final MyBookService myBookService;
@@ -311,5 +313,10 @@ public class OrderService {
 	public List<String> findByDateFormat_PayDate() {
 		return orderRepository.findByDateFormat_PayDate();
 	}
+
+	public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
+		return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
+	}
+
 }
 
