@@ -53,6 +53,11 @@ public class NotProdInitData {
 			memberService.forceEmailVerify(member2);
 			memberService.beAuthor(member2, "mark");
 
+			joinForm = new JoinForm("admin", "1234", "admin@test.com");
+			Member admin = memberService.join(joinForm);
+			memberService.forceEmailVerify(admin);
+
+
 			PostForm postForm1 = new PostForm("자바를 우아하게 사용하는 방법", "# 내용 1", "<h1>내용 1</h1>", "#IT #자바 #카프카");
 			postService.write(member1, postForm1);
 
