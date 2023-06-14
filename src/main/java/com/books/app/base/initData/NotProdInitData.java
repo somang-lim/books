@@ -14,6 +14,7 @@ import com.books.app.member.entity.Member;
 import com.books.app.member.form.JoinForm;
 import com.books.app.member.service.MemberService;
 import com.books.app.order.entity.Order;
+import com.books.app.order.repository.OrderItemRepository;
 import com.books.app.order.repository.OrderRepository;
 import com.books.app.order.service.OrderService;
 import com.books.app.post.form.PostForm;
@@ -35,7 +36,8 @@ public class NotProdInitData {
 		ProductService productService,
 		CartService cartService,
 		OrderService orderService,
-		OrderRepository orderRepository
+		OrderRepository orderRepository,
+		OrderItemRepository orderItemRepository
 	) {
 		return args -> {
 			if (initDataDone) {
@@ -145,6 +147,8 @@ public class NotProdInitData {
 
 			int order1PayPrice = order1.calculatePayPrice();
 			orderService.payByRestCashOnly(order1);
+			order1.getOrderItems().stream()
+					.forEach(orderItem -> orderItem.setPayDate(LocalDateTime.now().minusMonths(1)));
 			order1.setPayDate(LocalDateTime.now().minusMonths(1));
 			orderRepository.save(order1);
 
@@ -154,6 +158,8 @@ public class NotProdInitData {
 			);
 
 			orderService.payByRestCashOnly(order2);
+			order2.getOrderItems().stream()
+					.forEach(orderItem -> orderItem.setPayDate(LocalDateTime.now().minusMonths(2)));
 			order2.setPayDate(LocalDateTime.now().minusMonths(2));
 			orderRepository.save(order2);
 

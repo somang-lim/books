@@ -1,10 +1,12 @@
 package com.books.app.rebate.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.books.app.base.dto.RsData;
 import com.books.app.base.rq.Rq;
 import com.books.app.order.service.OrderService;
+import com.books.app.rebate.entity.RebateOrderItem;
 import com.books.app.rebate.service.RebateService;
 
 import lombok.RequiredArgsConstructor;
@@ -40,10 +43,27 @@ public class AdminRebateController {
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/makeData")
 	public String makeDate(String yearMonth) {
-		log.info("yearMonth: " + yearMonth);
 		RsData makeDataRsData = rebateService.makeData(yearMonth);
 
 		return Rq.redirectWithMsg("/admin/rebate/rebateOrderItemList?yearMonth=%s".formatted(yearMonth), makeDataRsData);
+	}
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@GetMapping("/rebateOrderItemList")
+	public String showRebateOrderItemList(String yearMonth, Model model) {
+		List<String> paidDate = orderService.findByDateFormat_PayDate();
+
+		if (!StringUtils.hasText(yearMonth)) {
+			yearMonth = paidDate.get(0);
+		}
+
+		List<RebateOrderItem> items = rebateService.findRebateOrderItemsByPayDateIn(yearMonth);
+
+		model.addAttribute("paidDate", paidDate);
+		model.addAttribute("yearMonth", yearMonth);
+		model.addAttribute("items", items);
+
+		return "admin/rebate/rebateOrderItemList";
 	}
 
 }

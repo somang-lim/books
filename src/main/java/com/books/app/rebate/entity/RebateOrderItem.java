@@ -121,4 +121,20 @@ public class RebateOrderItem extends BaseEntity {
 		return rebateDate != null;
 	}
 
+	public boolean isRebateAvailable() {
+		if (refundPrice > 0 || rebateDate != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int calculateRebatePrice() {
+		if (refundPrice > 0) {
+			return 0;
+		}
+
+		return wholesalePrice - pgFee;
+	}
+
 }
