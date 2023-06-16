@@ -38,3 +38,5 @@ out/
 
 ### application ###
 application-base-addi.yml
+
+.DS_Store
