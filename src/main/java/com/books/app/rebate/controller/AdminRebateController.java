@@ -1,5 +1,6 @@
 package com.books.app.rebate.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,5 +80,24 @@ public class AdminRebateController {
 
 		return Rq.redirectWithMsg("/admin/rebate/rebateOrderItemList?yearMonth=%s".formatted(yearMonth), rebateRsData);
 	}
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping("/rebateMany")
+	public String rebateMany(String ids, HttpServletRequest request) {
+		String[] idsArr = ids.split(",");
+
+		Arrays.stream(idsArr)
+				.mapToLong(Long::parseLong)
+				.forEach(id -> {
+					rebateService.rebate(id);
+				});
+
+		String referer = request.getHeader("Referer");
+		String yearMonth = Ut.url.getQueryParamValue(referer, "yearMonth", "");
+
+		String message = "%d건의 정산을 완료했습니다.".formatted(idsArr.length);
+		return Rq.redirectWithMsg("/admin/rebate/rebateOrderItemList?yearMonth=%s".formatted(yearMonth), message);
+	}
+
 
 }
