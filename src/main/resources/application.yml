@@ -22,6 +22,12 @@ spring:
           auth: true
           starttls:
             enable: true
+  batch:
+    job:
+      names: ${job.name:NONE}
+      enabled: false
+    jdbc:
+      initialize-schema: always
 logging:
   level:
     root: info

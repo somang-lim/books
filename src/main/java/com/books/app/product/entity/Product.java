@@ -120,7 +120,7 @@ public class Product extends BaseEntity {
 	}
 
 	public int getWholesalePrice() {
-		return (int) Math.ceil(getPrice() * 0.4);
+		return (int) Math.ceil(getPrice() * 0.6);
 	}
 
 }

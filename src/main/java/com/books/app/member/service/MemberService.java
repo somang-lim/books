@@ -178,7 +178,7 @@ public class MemberService {
 		return RsData.of("S-1", "해당 필명으로 활동을 시작합니다.");
 	}
 
-	// 닉네임 변경으로 Authentication 변경 추가
+	// 닉네임 및 예치금 변경으로 Authentication 변경 추가
 	private void forceAuthentication(Member member) {
 		MemberContext memberContext = new MemberContext(member, member.genAuthorities());
 
@@ -219,6 +219,22 @@ public class MemberService {
 				"S-1",
 				"성공",
 				new AddCashRsDataBody(cashLog, newRestCash)
+		);
+	}
+
+	@Transactional
+	public RsData<AddCashRsDataBody> addCashNotForceAuthentication(Member member, long price, String eventType) {
+		CashLog cashLog = cashService.addCash(member, price, eventType);
+
+		long newRestCash = member.getRestCash() + cashLog.getPrice();
+		member.setRestCash(newRestCash);
+
+		memberRepository.save(member);
+
+		return RsData.of(
+			"S-1",
+			"성공",
+			new AddCashRsDataBody(cashLog, newRestCash)
 		);
 	}
 

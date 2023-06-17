@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.books.app.base.dto.RsData;
@@ -97,9 +98,23 @@ public class Rq {
 	public static String urlWithErrorMsg(String url, String errorMsg) {
 		return Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(errorMsg));
 	}
-
 	public static String msgWithTtl(String msg) {
 		return Ut.url.encode(msg) + ";ttl=" + new Date().getTime();
+	}
+
+	public String modifyQueryParam(String paramName, String paramValue) {
+		return Ut.url.modifyQueryParam(getCurrentUrl(), paramName, paramValue);
+	}
+
+	private String getCurrentUrl() {
+		String url = req.getRequestURI();
+		String queryStr = req.getQueryString();
+
+		if (StringUtils.hasText(queryStr)) {
+			url += "?" + queryStr;
+		}
+
+		return url;
 	}
 
 	public long getId() {
@@ -117,4 +132,25 @@ public class Rq {
 	public boolean isLogin() {
 		return isLogout() == false;
 	}
+
+	public boolean isAdmin() {
+		if (isLogout()) return false;
+
+		return memberContext.hasAuthority("ADMIN");
+	}
+
+	public boolean isAuthor() {
+		if (isLogout()) return false;
+
+		return memberContext.hasAuthority("AUTHOR");
+	}
+
+	public boolean isUserPage() {
+		return !isAdminPage();
+	}
+
+	public boolean isAdminPage() {
+		return req.getRequestURI().startsWith("/admin");
+	}
+
 }
