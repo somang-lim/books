@@ -1,13 +1,15 @@
 package com.books.app.rebate.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -16,6 +18,7 @@ import com.books.app.base.rq.Rq;
 import com.books.app.order.service.OrderService;
 import com.books.app.rebate.entity.RebateOrderItem;
 import com.books.app.rebate.service.RebateService;
+import com.books.util.Ut;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +67,17 @@ public class AdminRebateController {
 		model.addAttribute("items", items);
 
 		return "admin/rebate/rebateOrderItemList";
+	}
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping("/rebateOne/{orderItemId}")
+	public String rebateOne(@PathVariable Long orderItemId, HttpServletRequest request) {
+		RsData rebateRsData = rebateService.rebate(orderItemId);
+
+		String referer = request.getHeader("Referer");
+		String yearMonth = Ut.url.getQueryParamValue(referer, "yearMonth", "");
+
+		return Rq.redirectWithMsg("/admin/rebate/rebateOrderItemList?yearMonth=%s".formatted(yearMonth), rebateRsData);
 	}
 
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.books.app.base.dto.RsData;
+import com.books.app.cash.entity.CashLog;
+import com.books.app.member.service.MemberService;
 import com.books.app.order.entity.OrderItem;
 import com.books.app.order.service.OrderService;
 import com.books.app.rebate.entity.RebateOrderItem;
@@ -15,14 +17,17 @@ import com.books.app.rebate.repository.RebateOrderItemRepository;
 import com.books.util.Ut;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class RebateService {
 
 	private final RebateOrderItemRepository rebateOrderItemRepository;
 	private final OrderService orderService;
+	private final MemberService memberService;
 
 
 	@Transactional
@@ -77,5 +82,30 @@ public class RebateService {
 		LocalDateTime toDate = Ut.date.parse(toDateStr);
 
 		return rebateOrderItemRepository.findAllByPayDateBetweenOrderByIdAsc(fromDate, toDate);
+	}
+
+	@Transactional
+	public RsData rebate(long orderItemId) {
+		RebateOrderItem rebateOrderItem = rebateOrderItemRepository.findByOrderItemId(orderItemId).get();
+
+		if (!rebateOrderItem.isRebateAvailable()) {
+			return RsData.of("F-1", "정산이 불가능합니다.");
+		}
+
+		int calculateRebatePrice = rebateOrderItem.calculateRebatePrice();
+
+		CashLog cashLog = memberService.addCashNotForceAuthentication(
+				rebateOrderItem.getProduct().getAuthor(),
+				calculateRebatePrice,
+				"정산__%d__지급__예치금".formatted(rebateOrderItem.getOrderItem().getId())
+		).getData().getCashLog();
+
+		rebateOrderItem.setRebateDone(cashLog.getId());
+
+		return RsData.of(
+			"S-1",
+			"주문품목번호 %d번에 대해서 판매자에게 %s원 정산을 완료했습니다.".formatted(rebateOrderItem.getOrderItem().getId(), calculateRebatePrice),
+			Ut.mapOf("cashLogId", cashLog.getId())
+		);
 	}
 }

@@ -137,4 +137,8 @@ public class RebateOrderItem extends BaseEntity {
 		return wholesalePrice - pgFee;
 	}
 
+	public void setRebateDone(Long cashLogId) {
+		rebateDate = LocalDateTime.now();
+		this.rebateCashLog = new CashLog(cashLogId);
+	}
 }
